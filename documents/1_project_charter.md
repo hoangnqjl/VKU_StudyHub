@@ -55,6 +55,7 @@
 - **Module 1: Authentication & Study Profile (Tài khoản & Hồ sơ môn học)**
   - Đăng nhập/Đăng ký tài khoản (hỗ trợ xác thực sinh viên qua Email/Google Auth).
   - Chọn danh sách các môn học đang theo học trong kỳ và mục tiêu học tập (ví dụ: Ôn thi giữa kỳ, Làm đồ án).
+  - Cho phép quản lý tài liệu của chính mình
 - **Module 2: "Study Radar" – Tìm bạn học tức thì (Tính năng trọng tâm)**
   - Bật trạng thái học: Chọn môn + Địa điểm trong trường (Thư viện, Khu tự học tòa V, Căn tin...).
   - Xem danh sách bạn học đang "sáng đèn" gần đó có cùng môn học để bấm nút "Xin ghép bàn học".
@@ -113,7 +114,7 @@
 
 | Milestone | Target Week | Major Deliverables | Responsible Role |
 | :---: | :---: | :--- | :--- |
-| **M1** | Week 2 | Hoàn thiện Project Charter cho Mobile App & Khởi tạo GitHub Projects | PM & Cả nhóm |
+| **M1** | Week 2 | Hoàn thiện Project Charter và WBS cho Mobile App & Khởi tạo GitHub Projects | PM & Cả nhóm |
 | **M2** | Weeks 3–4 | Thiết kế Wireframe UI Mobile (Figma), cấu trúc WBS & Ma trận RTM | BA (Tạ Kim Hương) & PM |
 | **M3** | Week 5 | Sprint 1: Khởi tạo project React Native (Expo), thiết lập Supabase Auth & CSDL | Toàn bộ nhóm |
 | **M4** | Weeks 6–7 | Sprint 1 Review: Xong UI kho tài liệu & Module tạo/quét mã QR; Báo cáo rủi ro #1 | Dev Team & PM |
