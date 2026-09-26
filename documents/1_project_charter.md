@@ -3,7 +3,7 @@
 **Course:** Software Project Management  
 **Academic Supervisor / Instructor:** TS. Nguyễn Thành Tuấn  
 **Submission Deadline:** End of Week 2 (Milestone M1)  
-**Document Version:** Version 1.0 (Draft / Approved)  
+**Document Version:** Version 1.0 
 **Recommended Length:** 3 – 5 pages (Concise, actionable, and bounded – not an exhaustive SRS)
 
 ---
@@ -13,7 +13,7 @@
 | Item | Details |
 | :--- | :--- |
 | **Project Name** | VKU StudyHub Mobile – Ứng dụng di động kết nối bạn học & chia sẻ tài liệu thông minh |
-| **Project Acronym / Key** | VKU-STUDYHUB-APP |
+| **Project Acronym / Key** | VKU-STUDYHUB |
 | **Course Cohort** | Quản lý dự án phần mềm |
 | **Team Name / Identifier** | Nhóm 05 - StudyHub |
 | **Creation Date** | 25/09/2026 |
@@ -43,9 +43,9 @@
 ## 4. SMART PROJECT OBJECTIVES
 
 1. **Objective 1 (Core Mobile App & Performance):** Xây dựng và xuất bản gói cài đặt Android APK (thông qua Expo EAS / Local Build) với thời gian khởi động ứng dụng dưới 3 giây và thời gian phản hồi/tải dữ liệu dưới 1.5 giây trong điều kiện mạng thông thường trước Tuần 9.
-2. **Objective 2 (Operational & User Validation):** Cài đặt ứng dụng thử nghiệm cho ít nhất 5 – 8 sinh viên VKU thông qua Expo Go / file APK; thực hiện thành công tối thiểu 15 lượt quét mã QR nhận tài liệu và 10 phiên ghép bạn/nhóm học trong đợt thử nghiệm tại Tuần 12.
+2. **Objective 2 (Operational & User Validation):** Cài đặt ứng dụng thử nghiệm cho ít nhất 5 – 8 sinh viên VKU thông qua Expo Go / file APK; thực hiện thành công tối thiểu 10 lượt quét mã QR nhận tài liệu và 5 phiên ghép bạn/nhóm học trong đợt thử nghiệm tại Tuần 12.
 3. **Objective 3 (Engineering Rigor & Quality Gate):** Đạt tối thiểu 90% commit tuân thủ chuẩn Conventional Commits, thiết lập GitHub Actions tự động kiểm tra cú pháp (Lint/Build) trên mỗi PR, 100% PR phải được ít nhất 1 thành viên review trước khi merge vào nhánh main.
-4. **Objective 4 (Production Deployment & Acceptance):** Triển khai Backend/Database lên dịch vụ đám mây miễn phí (Supabase Cloud) và bàn giao file cài đặt APK hoàn chỉnh cùng tài liệu hướng dẫn sử dụng cho Giảng viên hướng dẫn trước Tuần 13.
+4. **Objective 4 (Production Deployment & Acceptance):** Triển khai Backend/Database lên dịch vụ đám mây miễn phí và bàn giao file cài đặt APK hoàn chỉnh cùng tài liệu hướng dẫn sử dụng cho Giảng viên hướng dẫn trước Tuần 13.
 
 ---
 
@@ -63,7 +63,7 @@
   - Kho tài liệu phân loại gọn gàng theo môn học.
   - Tạo mã QR động cho tài liệu; sinh viên mở camera app quét QR là lưu ngay tài liệu vào mục "Tài liệu của tôi" mà không cần gõ tìm kiếm.
 - **Module 4: Shared Study Timer (Đồng hồ Pomodoro học nhóm)**
-  - Tạo phòng đếm ngược Pomodoro (25 phút tập trung - 5 phút nghỉ); hiển thị danh sách thành viên đang cùng tập trung để giữ kỷ luật học tập.
+  - Tạo phòng đếm ngược Pomodoro (25 phút tập trung - 5 phút nghỉ - Hoặc có thể điều chỉnh thời gian); hiển thị danh sách thành viên đang cùng tập trung để giữ kỷ luật học tập.
 - **Engineering & Governance Deliverables:**
   - Kho mã nguồn React Native (Expo) trên GitHub có commit log minh bạch.
   - Bảng Kanban trên GitHub Projects quản lý Sprint.
@@ -83,16 +83,16 @@
 
 | Stakeholder / Entity | Role in Project | Power | Interest | Engagement Strategy |
 | :--- | :--- | :---: | :---: | :--- |
-| **TS. Nguyễn Thành Tuấn** | Academic Supervisor & Đánh giá môn học | High | High | **Manage Closely:** Báo cáo kiểm soát tiến độ định kỳ (M1–M10), demo trực tiếp app trên điện thoại. |
+| **TS. Nguyễn Thành Tuấn** | Academic Supervisor & Đánh giá môn học | High | High | **Manage Closely:** Báo cáo kiểm soát tiến độ định kỳ (M1–M9), demo trực tiếp app trên điện thoại. |
 | **Sinh viên VKU (End Users)** | Đối tượng trải nghiệm ứng dụng di động | Low | High | **Keep Informed / Engage:** Cài đặt thử nghiệm qua Expo Go / APK, phản hồi về độ tiện dụng của tính năng Radar & QR. |
 | **Project Engineering Team (Nhóm 05)** | Phân tích, thiết kế UI mobile, code React Native | High | High | **Collaborate Daily:** Quản lý task trên GitHub Projects, họp Standup nhanh và review Pull Request chéo. |
-| **Quản trị viên hạ tầng (Backend/Cloud)** | Quản lý Supabase/API | High | Low | **Keep Satisfied:** Đảm bảo hạn mức cơ sở dữ liệu miễn phí, bảo mật API keys trong file .env. |
+| **Quản trị viên hạ tầng (Backend/Cloud)** | Quản lý Database | High | Low | **Keep Satisfied:** Đảm bảo hạn mức cơ sở dữ liệu miễn phí, bảo mật API keys trong file .env. |
 
 ### 6.2. Power-Interest Matrix
 
 | Mức độ | Low Interest (Quan tâm thấp) | High Interest (Quan tâm cao) |
 | :--- | :--- | :--- |
-| **High Power** (Quyền hạn cao) | **KEEP SATISFIED (Làm hài lòng):** Giảng viên bộ môn / Đại diện Khoa CNTT, Quản trị viên hạ tầng (Cloud/Backend Admin) | **MANAGE CLOSELY (Quản lý chặt chẽ):** Giảng viên hướng dẫn (TS. Nguyễn Thành Tuấn), Project Manager (Nguyễn Quang Hoàng) |
+| **High Power** (Quyền hạn cao) | **KEEP SATISFIED (Làm hài lòng):** Giảng viên và sinh viên trải nghiệm | **MANAGE CLOSELY (Quản lý chặt chẽ):** Giảng viên hướng dẫn (TS. Nguyễn Thành Tuấn), Project Manager (Nguyễn Quang Hoàng) |
 | **Low Power** (Quyền hạn thấp) | **MONITOR (Giám sát):** Các nhóm dự án đồng môn, Cộng đồng mã nguồn mở Expo | **KEEP INFORMED (Cập nhật thường xuyên):** Sinh viên VKU trải nghiệm ứng dụng, Đội ngũ Tester cài đặt bản APK |
 
 ---
@@ -115,29 +115,25 @@
 | Milestone | Target Week | Major Deliverables | Responsible Role |
 | :---: | :---: | :--- | :--- |
 | **M1** | Week 2 | Hoàn thiện Project Charter và WBS cho Mobile App & Khởi tạo GitHub Projects | PM & Cả nhóm |
-| **M2** | Weeks 3–4 | Thiết kế Wireframe UI Mobile (Figma), cấu trúc WBS & Ma trận RTM | BA (Tạ Kim Hương) & PM |
-| **M3** | Week 5 | Sprint 1: Khởi tạo project React Native (Expo), thiết lập Supabase Auth & CSDL | Toàn bộ nhóm |
-| **M4** | Weeks 6–7 | Sprint 1 Review: Xong UI kho tài liệu & Module tạo/quét mã QR; Báo cáo rủi ro #1 | Dev Team & PM |
+| **M2** | Weeks 3–4 | cấu trúc WBS & Ma trận RTM | BA (Tạ Kim Hương) & PM |
+| **M3** | Week 5 | Sprint 1: Khởi tạo project React Native (Expo), thiết lập Auth & CSDL | Toàn bộ nhóm |
+| **M4** | Weeks 6–7 | Sprint 1 Review: Xong kho tài liệu & Module tạo/quét mã QR; Báo cáo rủi ro #1 | Dev Team & PM |
 | **M5** | Weeks 8–9 | **Midterm Milestone:** Demo ứng dụng trực tiếp trên điện thoại (Tính năng Radar + QR Share) | Toàn bộ nhóm |
-| **M6** | Weeks 9–10 | Báo cáo minh chứng ứng dụng AI (GitHub Copilot / Cursor tạo UI components & logic) | Dev Team & PM |
-| **M7** | Weeks 11–12 | Sprint 2 Review: Hoàn thiện đồng hồ Pomodoro nhóm & Quản lý phạm vi rủi ro #2 | PM (Nguyễn Quang Hoàng) |
-| **M8** | Week 13 | Đóng gói bản phát hành Android APK & Hoàn tất thử nghiệm người dùng (UAT) | Toàn bộ nhóm |
-| **M9** | Week 14 | Hoàn thiện toàn bộ hồ sơ bằng chứng kỹ thuật (Audit Evidence Package) | Toàn bộ nhóm |
-| **M10** | Week 15 | **Bảo vệ đồ án cuối kỳ & Trình diễn trực tiếp ứng dụng di động trước Hội đồng** | Toàn bộ nhóm |
+| **M6** | Weeks 10–12 | Sprint 2 Review: Hoàn thiện đồng hồ Pomodoro nhóm & Quản lý phạm vi rủi ro #2 | Toàn bộ nhóm |
+| **M7** | Week 13 | Đóng gói bản phát hành Android APK & Hoàn tất thử nghiệm người dùng (UAT) | Toàn bộ nhóm |
+| **M8** | Week 14 | Hoàn thiện toàn bộ hồ sơ bằng chứng kỹ thuật (Audit Evidence Package) | Toàn bộ nhóm |
+| **M9** | Week 15 | **Bảo vệ đồ án cuối kỳ & Trình diễn trực tiếp ứng dụng di động trước Hội đồng** | Toàn bộ nhóm |
 
 ---
 
 ## 9. DEVELOPMENT METHODOLOGY & CADENCE
 
 ### 9.1. Chosen Development Methodology
-- [x] **Iterative & Incremental Development (Scrum Framework):** Chu kỳ 2 tuần/Sprint, tập trung release bản build app kiểm thử được liên tục.
-- [ ] Agile Flow / Kanban
-- [ ] Hybrid (Milestone-Gated Iterative)
-- [ ] Structured Sequential / Waterfall
+- **Iterative & Incremental Development (Scrum Framework):** Chu kỳ 2 tuần/Sprint, tập trung release bản build app kiểm thử được liên tục.
 
 ### 9.2. Methodology Justification
 - **Trải nghiệm ứng dụng di động đòi hỏi phản hồi nhanh:** Việc phát triển app trên di động cần liên tục kiểm tra thực tế trên màn hình smartphone (cảm ứng, bố cục nút bấm, camera quét QR). Chu kỳ Sprint ngắn giúp nhóm kịp thời tối ưu giao diện UI/UX.
-- **Giảm thiểu rủi ro tích hợp:** Xây dựng tính năng theo từng gói nhỏ (Auth → QR Scan → Radar) giúp nhóm luôn có sẵn một phiên bản app chạy được ổn định để báo cáo qua từng mốc M1–M10.
+- **Giảm thiểu rủi ro tích hợp:** Xây dựng tính năng theo từng gói nhỏ (Auth → QR Scan → Radar) giúp nhóm luôn có sẵn một phiên bản app chạy được ổn định để báo cáo qua từng mốc M1–M9.
 
 ---
 
@@ -146,10 +142,10 @@
 | # | Thành viên | MSSV | GitHub Username | Vai trò dự án | Trách nhiệm chính trong App React Native |
 | :-: | :--- | :---: | :---: | :--- | :--- |
 | 1 | **Nguyễn Quang Hoàng** | 23IT.B063 | @hoangnq | **Project Manager (PM)** | Điều phối tiến độ Sprint, quản lý GitHub Projects, kiểm soát phạm vi và đại diện làm việc với Giảng viên. |
-| 2 | **Tạ Kim Hương** | 23IT.B088 | @huongtk | **Business Analyst (BA)** | Thiết kế luồng trải nghiệm người dùng (Figma Mobile UI), viết User Stories và điều phối thử nghiệm thực tế với sinh viên. |
+| 2 | **Tạ Kim Hương** | 23IT.B088 | @huongtk | **Business Analyst (BA)** | Thiết kế luồng trải nghiệm người dùng, viết User Stories và điều phối thử nghiệm thực tế với sinh viên. |
 | 3 | **Nguyễn Thị Diễm Quỳnh** | 23IT.B196 | @quynhntd | **Mobile Developer (UI Lead)** | Lập trình các màn hình chính bằng React Native / Expo: Trang chủ, Hồ sơ môn học, Giao diện Radar tìm bạn học. |
 | 4 | **Phạm Nguyễn Phú Trọng** | 23CE.B025 | @trongpnp | **Mobile Developer (Feature Lead)** | Lập trình module tích hợp Camera / Quét mã QR (expo-camera, expo-barcode-scanner) và đồng hồ Pomodoro nhóm. |
-| 5 | **Đoàn Hữu Khánh** | 23IT.B096 | @khanhdh | **Backend & Cloud Engineer (QA)** | Cấu hình Supabase (PostgreSQL, Auth, Storage lưu file PDF), viết API/Trigger và thiết lập luồng CI GitHub Actions. |
+| 5 | **Đoàn Hữu Khánh** | 23IT.B096 | @khanhdh | **Backend & Cloud Engineer (QA)** | Cấu hình Supabase (MySQL, Auth, Storage), viết API/Trigger và thiết lập luồng CI GitHub Actions. |
 
 ---
 
@@ -157,11 +153,11 @@
 
 ### 11.1. Project Constraints (Ràng buộc dự án)
 - **Schedule:** 15 tuần học kỳ; bắt buộc có file APK chạy mượt mà trước Tuần 14.
-- **Budget & Infrastructure:** 0 VNĐ. Dùng nền tảng mã nguồn mở miễn phí: React Native (Expo), Supabase Free Tier (Auth & Database & Storage), GitHub Free.
+- **Budget & Infrastructure:** 0 VNĐ. Dùng nền tảng mã nguồn mở miễn phí: React Native (Expo), Aiven Free Tier & Google console (Auth & Database & Storage), GitHub Free.
 - **Technology Stack:**
   - Framework: React Native (Expo SDK).
-  - Backend as a Service (BaaS): Supabase (PostgreSQL + Realtime Channel cho Radar).
-  - Ngôn ngữ: TypeScript / JavaScript.
+  - Backend as a Service (BaaS): Aiven Free Tier (MySQL).
+  - Ngôn ngữ: TypeScript
 
 ### 11.2. Key Assumptions
 - Thiết bị di động của các thành viên và người dùng thử nghiệm có camera hoạt động tốt để quét mã QR.
@@ -182,7 +178,7 @@
 
 ### 12.1. Project Success Criteria
 1. **Functional Completeness:** Đóng gói thành công ứng dụng Android (.apk) cài đặt được trên điện thoại thật; hoạt động mượt mà đầy đủ các tính năng: Đăng nhập, Radar tìm bạn, Quét QR lấy tài liệu, Đồng hồ học nhóm.
-2. **Authentic Validation:** Tối thiểu 25 sinh viên VKU cài đặt trải nghiệm thử và cho đánh giá tốt về sự tiện lợi của tính năng quét QR và ghép nhóm.
+2. **Authentic Validation:** Tối thiểu 5 - 8 sinh viên VKU cài đặt trải nghiệm thử và cho đánh giá tốt về sự tiện lợi của tính năng quét QR và ghép nhóm.
 3. **Engineering Rigor:** Bảng GitHub Projects phản ánh chân thực các đầu việc của từng Sprint; có minh chứng rõ ràng việc dùng AI hỗ trợ viết code/giao diện.
 
 ### 12.2. Engineering Definition of Done (DoD) cho ứng dụng Mobile
