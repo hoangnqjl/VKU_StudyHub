@@ -122,7 +122,7 @@
 | **M6** | Weeks 10–12 | Sprint 2 Review: Hoàn thiện đồng hồ Pomodoro nhóm & Quản lý phạm vi rủi ro #2 | Toàn bộ nhóm |
 | **M7** | Week 13 | Đóng gói bản phát hành Android APK & Hoàn tất thử nghiệm người dùng (UAT) | Toàn bộ nhóm |
 | **M8** | Week 14 | Hoàn thiện toàn bộ hồ sơ bằng chứng kỹ thuật (Audit Evidence Package) | Toàn bộ nhóm |
-| **M9** | Week 15 | **Bảo vệ đồ án cuối kỳ & Trình diễn trực tiếp ứng dụng di động trước Hội đồng** | Toàn bộ nhóm |
+| **M9** | Week 15 | **Bảo vệ đồ án cuối kỳ & Trình bày trực tiếp ứng dụng di động trước Hội đồng** | Toàn bộ nhóm |
 
 ---
 
