@@ -24,10 +24,7 @@
 ---
 
 ## 2. PROJECT SOURCING & REAL-WORLD CONTEXT
-
-- [ ] Pathway 1: Capstone Project from Concurrent Engineering Course
-- [ ] Pathway 2: Real External Client / Freelance Project / Industry Partner
-- [x] **Pathway 3: Real Campus / Department / Student Organization Need at VKU**  
+- Pathway 3: Real Campus / Department / Student Organization Need at VKU**  
   *(Giải quyết nhu cầu thực tế của sinh viên VKU: Cần tìm bạn học cùng môn ngay tại thư viện/khu tự học trường và quét mã QR chia sẻ nhanh tài liệu ôn thi trực tiếp trên smartphone).*
 
 ---
