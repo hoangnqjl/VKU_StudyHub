@@ -17,8 +17,8 @@
 | **Course Cohort** | Quản lý dự án phần mềm |
 | **Team Name / Identifier** | Nhóm 05 - StudyHub |
 | **Creation Date** | 25/09/2026 |
-| **Document Version** | Version 1.0 (Draft) |
-| **Primary GitHub Repository** | https://github.com/vku-studyhub/vku-studyhub-mobile |
+| **Document Version** | Version 1.0 |
+| **Primary GitHub Repository** | https://github.com/hoangnqjl/VKU_StudyHub.git |
 | **GitHub Project Board URL** | https://github.com/orgs/vku-studyhub/projects/1 |
 
 ---
