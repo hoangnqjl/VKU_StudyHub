@@ -19,7 +19,7 @@
 | **Creation Date** | 25/09/2026 |
 | **Document Version** | Version 1.0 |
 | **Primary GitHub Repository** | https://github.com/hoangnqjl/VKU_StudyHub.git |
-| **GitHub Project Board URL** | https://github.com/orgs/vku-studyhub/projects/1 |
+| **GitHub Project Board URL** | https://github.com/users/hoangnqjl/projects/1/views/1 |
 
 ---
 
