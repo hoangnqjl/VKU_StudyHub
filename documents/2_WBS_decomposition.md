@@ -1,63 +1,76 @@
-# Lab 1 — WBS Decomposition Practice
+Project: VKU StudyHub App (VKU-STUDYHUB)
 
-**Aligns with:** [Week 3 — Scope & Requirements Planning](../slides/Week-03-Scope-WBS.md) · **Format:** ungraded practice exercise, run before teams decompose their own real project's WBS (the actual graded milestone is in Week 3's slide deck)
+├── 1. Project Management \& Governance
 
-## Objective
+│   ├── 1.1 Project Charter \& Stakeholder Matrix
 
-Practice the mechanics of Work Breakdown Structure decomposition — deliverable-oriented breakdown, the 100% rule, and the "1-2 weeks per work package" depth heuristic — on a sample project, so the whiteboard walkthrough in Week 3 isn't the first time students apply it.
+│   ├── 1.2 GitHub Projects Scrum Board Setup
 
-## Worked example (from the lecture)
+│   ├── 1.3 Requirements Traceability Matrix (RTM)
 
-```
-Project: Facility Survey Tool
-├── 1. Data Collection Module
-│   ├── 1.1 Dynamic form engine
-│   ├── 1.2 Offline storage
-│   └── 1.3 Sync queue
-├── 2. Admin Dashboard
-│   ├── 2.1 Submission viewer
-│   └── 2.2 Export to CSV
-└── 3. Deployment
-    ├── 3.1 Hosting setup
-    └── 3.2 User onboarding docs
-```
+│   ├── 1.4 Risk Register \& Tracking Reports
 
-Each leaf node is a concrete, estimable deliverable — not a verb like "develop" or "test."
+│   └── 1.5 Audit Evidence Package \& Presentation
 
-## Practice scenario
+├── 2. System Architecture \& Cloud Infrastructure
 
-**Project:** Campus Club Event Booking App — lets student clubs reserve rooms/equipment and lets the university approve or reject requests.
+│   ├── 2.1 Expo / React Native TypeScript Scaffold
 
-Partially decomposed WBS — **complete the missing branches**:
+│   ├── 2.2 GitHub Actions CI Pipeline
 
-```
-Project: Campus Club Event Booking App
-├── 1. Booking Request Module
-│   ├── 1.1 Room/equipment availability calendar
-│   ├── 1.2 ?
-│   └── 1.3 ?
-├── 2. Approval Workflow
-│   ├── 2.1 ?
-│   └── 2.2 Notification on approve/reject
-└── 3. ?
-    ├── 3.1 ?
-    └── 3.2 ?
-```
+│   ├── 2.3 Branch Protection Rules \& Secrets
 
-**Steps:**
+│   ├── 2.4 Cloud Database Schema \& Relations
 
-1. Fill in the `?` nodes with concrete, deliverable-oriented items (not verbs).
-2. Apply the **100% rule**: does your completed tree cover everything a minimal version of this app needs, with nothing extra?
-3. Check depth: is every leaf roughly 1-2 weeks of work for a pair of students? Split anything bigger, merge anything smaller.
-4. Compare with a neighboring team — where did you decompose differently, and is either wrong, or just a different valid scope call?
+│   └── 2.5 Cloud Storage Bucket \& Policies
 
-## Discussion prompts
+├── 3. Authentication \& Study Profile
 
-- Where did your team disagree about whether something was "one work package" or "two"?
-- Did you find anything that felt like a to-do item ("test the calendar") rather than a deliverable? How did you reframe it?
+│   ├── 3.1 Sign-in / Sign-up Screen
 
-## Related
+│   ├── 3.2 User Profile \& Course Selector View
 
-- [Week 3 — Scope & Requirements Planning](../slides/Week-03-Scope-WBS.md) — full lecture content this lab supports
-- [Lab 2 — Planning Poker Practice](Lab-2-Planning-Poker-Practice.md) — next step: estimating the work packages you just built
-- [Project Charter Template](../project/Project-Charter-Template.md) — your real project's WBS must trace back to this charter's scope
+│   ├── 3.3 Study Goals Configuration View
+
+│   └── 3.4 Personal Document Repository Screen
+
+├── 4. Study Buddy Radar
+
+│   ├── 4.1 Study Status Toggle \& Location Selector
+
+│   ├── 4.2 Active Buddy List Interface
+
+│   └── 4.3 Table-Join Request Notifications
+
+├── 5. Fast QR Document Sharing
+
+│   ├── 5.1 Course-Based Document Catalog View
+
+│   ├── 5.2 Dynamic QR Code Generator Engine
+
+│   ├── 5.3 In-App Camera QR Code Scanner
+
+│   └── 5.4 One-Tap Document Saving Engine
+
+├── 6. Shared Study Timer (Pomodoro)
+
+│   ├── 6.1 Group Pomodoro Room Creation View
+
+│   ├── 6.2 Synchronized Countdown Engine
+
+│   └── 6.3 Active Member Participant Panel
+
+└── 7. Verification, Packaging \& Deployment
+
+&#x20;   ├── 7.1 Integration \& System Test Report
+
+&#x20;   ├── 7.2 Performance Benchmark Report
+
+&#x20;   ├── 7.3 Mobile Application Package (iOS/Android)
+
+&#x20;   ├── 7.4 Production Cloud Cutover
+
+&#x20;   ├── 7.5 UAT Feedback Form \& Test Reports
+
+&#x20;   └── 7.6 User \& Admin Operational Guide
+
