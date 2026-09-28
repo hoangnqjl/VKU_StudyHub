@@ -177,7 +177,7 @@
 ## 12. SUCCESS CRITERIA & DEFINITION OF DONE (DoD)
 
 ### 12.1. Project Success Criteria
-1. **Functional Completeness:** Đóng gói thành công ứng dụng Android (.apk) cài đặt được trên điện thoại thật; hoạt động mượt mà đầy đủ các tính năng: Đăng nhập, Radar tìm bạn, Quét QR lấy tài liệu, Đồng hồ học nhóm.
+1. **Functional Completeness:** Đóng gói thành công ứng dụng Android (.apk) hoặc cài đặt được trên điện thoại thật (IOS, Android); hoạt động mượt mà đầy đủ các tính năng: Đăng nhập, Radar tìm bạn, Quét QR lấy tài liệu, Đồng hồ học nhóm.
 2. **Authentic Validation:** Tối thiểu 5 - 8 sinh viên VKU cài đặt trải nghiệm thử và cho đánh giá tốt về sự tiện lợi của tính năng quét QR và ghép nhóm.
 3. **Engineering Rigor:** Bảng GitHub Projects phản ánh chân thực các đầu việc của từng Sprint; có minh chứng rõ ràng việc dùng AI hỗ trợ viết code/giao diện.
 
