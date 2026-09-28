@@ -66,7 +66,7 @@
   - Tạo phòng đếm ngược Pomodoro (25 phút tập trung - 5 phút nghỉ - Hoặc có thể điều chỉnh thời gian); hiển thị danh sách thành viên đang cùng tập trung để giữ kỷ luật học tập.
 - **Engineering & Governance Deliverables:**
   - Kho mã nguồn React Native (Expo) trên GitHub có commit log minh bạch.
-  - Bảng Kanban trên GitHub Projects quản lý Sprint.
+  - Bảng Scrum trên GitHub Projects quản lý Sprint.
   - Bản cài đặt APK Android demo thực tế và video demo trải nghiệm trên thiết bị thật.
 
 ### 5.2. Explicitly Out-of-Scope (Phạm vi loại trừ để giữ dự án đơn giản)
@@ -102,7 +102,7 @@
 | Project Management Domain | GitHub Tool / Feature | Governance Standard |
 | :--- | :--- | :--- |
 | **Source Code Repository** | GitHub Repository | Quản lý mã nguồn React Native; bảo vệ nhánh main; 100% commit tuân thủ Conventional Commits (feat:, fix:, docs:, chore:). |
-| **Project Tracking & Board** | GitHub Projects (Kanban) | Các cột: Backlog, Ready, In Progress, In Review, Done. Phân bổ thẻ công việc theo từng Sprint 2 tuần. |
+| **Project Tracking & Board** | GitHub Projects (Scrum) | Các cột: Backlog, Ready, In Progress, In Review, Done, Sprint (Iteration). Phân bổ thẻ công việc theo từng Sprint 2 tuần. |
 | **Task Management** | GitHub Issues | Mỗi màn hình UI hoặc chức năng là một Issue riêng có gắn tag (mobile, backend, ui), độ ưu tiên và checklist. |
 | **Code Review & Quality Control** | GitHub Pull Requests | Bắt buộc tạo PR cho mỗi tính năng mới; yêu cầu tối thiểu 1 lập trình viên khác review code trước khi gộp vào main. |
 | **Milestone Tracking** | GitHub Milestones | Khởi tạo đầy đủ 10 mốc theo đề cương môn học (M1: Charter, M2: WBS, M5: Prototype Demo...). |
