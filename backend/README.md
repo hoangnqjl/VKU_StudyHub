@@ -92,14 +92,15 @@ backend/
 | :--- | :--- | :--- |
 | `GET` | `/api/health` | Kiểm tra trạng thái hoạt động của server & uptime |
 
-### 2. Module 1: Authentication & Profile (`/api/auth`)
-| Phương thức | Endpoint | Mô tả |
-| :--- | :--- | :--- |
-| `POST` | `/api/auth/login` | Đăng nhập tài khoản sinh viên VKU (Email / MSSV) |
-| `POST` | `/api/auth/register` | Đăng ký tài khoản sinh viên mới |
-| `GET` | `/api/auth/profile` | Xem thông tin hồ sơ & mục tiêu học tập |
-| `PUT` | `/api/auth/profile` | Cập nhật hồ sơ, danh sách môn học theo kỳ |
-| `GET` | `/api/auth/courses` | Danh sách các môn học mẫu tại trường VKU |
+### 2. Module 1: Authentication & Study Profile (`/api/auth` & aliases)
+| Phương thức | Endpoint | Alias Endpoint | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | | Đăng nhập tài khoản sinh viên VKU (Email / MSSV + Mật khẩu) |
+| `POST` | `/api/auth/signup` | `/api/auth/register` | Đăng ký tài khoản sinh viên mới (MSSV, Họ tên, Email, Mật khẩu, Môn học, Mục tiêu) |
+| `GET` | `/api/auth/profile` | `/api/profile` | Xem thông tin hồ sơ sinh viên, khoa, ngành & danh sách môn học đăng ký |
+| `PUT` | `/api/auth/profile` | `/api/edit-profile` | Chỉnh sửa hồ sơ sinh viên, cập nhật mục tiêu học tập & thêm/bớt môn học |
+| `GET` | `/api/auth/home` | `/api/home` | Dữ liệu tổng hợp Trang chủ (Thống kê radar, tài liệu, pomodoro, môn học, mẹo học tập) |
+| `GET` | `/api/auth/courses` | | Danh sách các môn học mẫu tại trường VKU |
 
 ### 3. Module 2: Study Buddy Radar (`/api/radar`)
 | Phương thức | Endpoint | Mô tả |

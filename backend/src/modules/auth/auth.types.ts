@@ -12,14 +12,17 @@ export interface UserProfile {
   updatedAt?: string;
 }
 
+export interface UserEntity extends UserProfile {
+  passwordHash: string;
+}
+
 export interface LoginDto {
   studentId?: string;
   email?: string;
-  fullName?: string;
   password?: string;
 }
 
-export interface RegisterDto {
+export interface SignupDto {
   studentId: string;
   email: string;
   fullName: string;
@@ -30,6 +33,8 @@ export interface RegisterDto {
   studyGoals?: string;
 }
 
+export type RegisterDto = SignupDto;
+
 export interface UpdateProfileDto {
   fullName?: string;
   avatarUrl?: string;
@@ -39,3 +44,20 @@ export interface UpdateProfileDto {
   studyGoals?: string;
 }
 
+export interface HomeDashboardData {
+  user: UserProfile;
+  stats: {
+    enrolledCoursesCount: number;
+    activeBuddiesNearBy: number;
+    savedDocumentsCount: number;
+    activePomodoroRoomsCount: number;
+  };
+  todayGoal: string;
+  enrolledCoursesDetails: Array<{
+    code: string;
+    name: string;
+    faculty?: string;
+    credits: number;
+  }>;
+  quickTips: string[];
+}
