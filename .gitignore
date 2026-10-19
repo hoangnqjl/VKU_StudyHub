@@ -1,1 +1,3 @@
-/vku-app/
+node_modules/
+.expo/
+

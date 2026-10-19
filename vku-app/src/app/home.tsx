@@ -1,0 +1,702 @@
+import { useState } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { useDesign } from '../components/design-scale';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+} from '@expo-google-fonts/inter';
+
+// ====== Tài nguyên (cắt trực tiếp từ thiết kế Figma) ======
+const IMG = {
+  logo: require('../../assets/images/vku-logo.png'),
+  arrow: require('../../assets/images/ic-arrow.png'),
+  search: require('../../assets/images/home/search.png'),
+  filter: require('../../assets/images/home/filter.png'),
+  bell: require('../../assets/images/home/bell.png'),
+  target: require('../../assets/images/home/target.png'),
+  scan: require('../../assets/images/home/scan.png'),
+  scanChev: require('../../assets/images/home/scan-chev.png'),
+  pomo: require('../../assets/images/home/pomo.png'),
+  pomoChev: require('../../assets/images/home/pomo-chev.png'),
+  tabHome: require('../../assets/images/home/tab-home.png'),
+  tabRadar: require('../../assets/images/home/tab-radar.png'),
+  tabDocs: require('../../assets/images/home/tab-docs.png'),
+  tabTimer: require('../../assets/images/home/tab-timer.png'),
+  plus: require('../../assets/images/home/plus.png'),
+};
+
+// ====== Màu đo từ ảnh thiết kế ======
+const C = {
+  primary: '#374F8A',
+  red: '#D81A24',
+  body: '#64748B',
+  muted: '#94A3B8',
+  tabMuted: '#8C9AB5',
+  line: '#F1F5F9',
+  soft: '#F8FAFC',
+  searchBg: '#EDF3FA',
+  yellow: '#FFCA10',
+  green: '#10B981',
+  scanBg: '#FFF8EA',
+  scanBorder: '#FEF2D9',
+  pomoBg: '#FFF0F0',
+  pomoBorder: '#FFE8E8',
+  ring1: '#E1E9F5',
+  ring2: '#EAF0F8',
+  ring3: '#F3F6FB',
+  white: '#FFFFFF',
+};
+
+const F = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semi: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+  extra: 'Inter_800ExtraBold',
+};
+
+const NEARBY = [
+  {
+    id: '1',
+    initials: 'MA',
+    color: '#FDE89F',
+    name: 'Minh Anh',
+    sub: 'Đang học Lập trình Web · Thư viện',
+  },
+  {
+    id: '2',
+    initials: 'HN',
+    color: '#D6E6F7',
+    name: 'Hoàng Nam',
+    sub: 'Ôn Cấu trúc dữ liệu · Khu tự học A',
+  },
+];
+
+export default function HomeScreen() {
+  const { s, z } = useDesign(raw);
+  const insets = useSafeAreaInsets();
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+  });
+
+  const [query, setQuery] = useState('');
+  const [ready, setReady] = useState(true);
+
+  if (!fontsLoaded) return null;
+
+  return (
+    <SafeAreaView style={s.safe} edges={['top']}>
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ===== Header ===== */}
+        <View style={s.header}>
+          <View style={s.brand}>
+            <Image source={IMG.logo} style={s.logo} />
+            <Text style={s.brandName}>Study Hub</Text>
+          </View>
+          <View style={s.headerRight}>
+            <Pressable style={s.bellBtn}>
+              <Image source={IMG.bell} style={{ width: z(19), height: z(21) }} />
+              <View style={s.bellDot} />
+            </Pressable>
+            <Pressable style={s.avatarBtn} onPress={() => router.push('/profile' as any)}>
+              <Text style={s.avatarText}>AN</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {/* ===== Lời chào ===== */}
+        <Text style={s.greet}>Chào buổi sáng, An👋</Text>
+        <Text style={s.title}>
+          Hôm nay mình <Text style={s.titleRed}>học gì nhỉ?</Text>
+        </Text>
+
+        {/* ===== Ô tìm kiếm ===== */}
+        <View style={s.search}>
+          <Image source={IMG.search} style={{ width: z(15), height: z(15) }} />
+          <TextInput
+            style={s.searchInput}
+            placeholder="Tìm bạn, môn học, tài liệu..."
+            placeholderTextColor={C.muted}
+            value={query}
+            onChangeText={setQuery}
+            returnKeyType="search"
+          />
+          <Pressable style={s.filterBtn}>
+            <Image source={IMG.filter} style={{ width: z(13), height: z(11) }} />
+          </Pressable>
+        </View>
+
+        {/* ===== Study Radar ===== */}
+        <View style={s.radarCard}>
+          <View style={[s.ring, s.ring3]} />
+          <View style={[s.ring, s.ring2]} />
+          <View style={[s.ring, s.ring1]} />
+
+          <View style={s.radarBadge}>
+            <Image source={IMG.target} style={s.radarIcon} />
+          </View>
+
+          <Text style={s.radarLabel}>STUDY RADAR</Text>
+          <Text style={s.radarTitle}>{'Tìm bạn học quanh\nbạn'}</Text>
+          <Text style={s.radarDesc}>
+            {'Kết nối cùng sinh viên đang học tập tại\ncác khu tự học & thư viện trường.'}
+          </Text>
+
+          <View style={s.readyRow}>
+            <View style={s.readyDot} />
+            <Text style={s.readyText}>Sẵn sàng ghép bàn</Text>
+            <Pressable
+              onPress={() => setReady((v) => !v)}
+              hitSlop={10}
+              style={[s.track, ready ? s.trackOn : s.trackOff]}
+            >
+              <View style={[s.thumb, ready ? s.thumbOn : s.thumbOff]} />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* ===== Quét tài liệu ===== */}
+        <Pressable style={[s.action, s.scanAction]}>
+          <View style={s.actionIcon}>
+            <Image source={IMG.scan} style={{ width: z(20), height: z(20.5) }} />
+          </View>
+          <View style={s.actionText}>
+            <Text style={s.actionTitle}>Quét tài liệu</Text>
+            <Text style={s.actionSub}>Lưu ngay bằng QR</Text>
+          </View>
+          <View style={[s.actionChev, { backgroundColor: '#FFFDF9' }]}>
+            <Image source={IMG.scanChev} style={{ width: z(8), height: z(11.5) }} />
+          </View>
+        </Pressable>
+
+        {/* ===== Pomodoro ===== */}
+        <Pressable style={[s.action, s.pomoAction, { marginTop: z(12) }]}>
+          <View style={s.actionIcon}>
+            <Image source={IMG.pomo} style={{ width: z(20), height: z(23.5) }} />
+          </View>
+          <View style={s.actionText}>
+            <Text style={s.actionTitle}>Pomodoro</Text>
+            <Text style={s.actionSub}>Vào phòng học chung</Text>
+          </View>
+          <View style={[s.actionChev, { backgroundColor: '#FFFAFA' }]}>
+            <Image source={IMG.pomoChev} style={{ width: z(8), height: z(11.5) }} />
+          </View>
+        </Pressable>
+
+        {/* ===== Đang học gần bạn ===== */}
+        <View style={s.sectionRow}>
+          <Text style={s.sectionTitle}>Đang học gần bạn</Text>
+          <Text style={s.sectionAll}>Xem tất cả</Text>
+        </View>
+
+        {NEARBY.map((p, i) => (
+          <View key={p.id} style={[s.nearCard, i > 0 && { marginTop: z(12) }]}>
+            <View style={[s.nearAvatar, { backgroundColor: p.color }]}>
+              <Text style={s.nearInitials}>{p.initials}</Text>
+            </View>
+            <View style={s.nearText}>
+              <Text style={s.nearName} numberOfLines={1}>
+                {p.name}
+              </Text>
+              <Text style={s.nearSub} numberOfLines={1}>
+                {p.sub}
+              </Text>
+            </View>
+            <View style={s.nearChev}>
+              <Image source={IMG.arrow} style={{ width: z(14), height: z(14.5) }} />
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* ===== Thanh điều hướng dưới ===== */}
+      <TabBar s={s} z={z} bottom={Math.max(insets.bottom - 20, 13)} />
+    </SafeAreaView>
+  );
+}
+
+function TabBar({
+  s,
+  z,
+  bottom,
+}: {
+  s: Record<string, any>;
+  z: (n: number) => number;
+  bottom: number;
+}) {
+  const [active, setActive] = useState('home');
+
+  const Item = ({
+    id,
+    label,
+    icon,
+    w,
+    h,
+  }: {
+    id: string;
+    label: string;
+    icon: any;
+    w: number;
+    h: number;
+  }) => {
+    const on = active === id;
+    return (
+      <Pressable style={s.tabItem} onPress={() => setActive(id)}>
+        <View style={s.tabIconBox}>
+          <Image source={icon} style={{ width: z(w), height: z(h) }} />
+        </View>
+        <Text style={[s.tabLabel, on ? s.tabLabelOn : s.tabLabelOff]}>{label}</Text>
+      </Pressable>
+    );
+  };
+
+  return (
+    <View style={[s.tabBar, { bottom }]} pointerEvents="box-none">
+      <Item id="home" label="Trang chủ" icon={IMG.tabHome} w={18} h={17.5} />
+      <Item id="radar" label="Radar" icon={IMG.tabRadar} w={20.5} h={21} />
+      <View style={s.tabItem}>
+        <Pressable style={s.fab}>
+          <Image source={IMG.plus} style={{ width: z(19), height: z(19) }} />
+        </Pressable>
+      </View>
+      <Item id="docs" label="Tài liệu" icon={IMG.tabDocs} w={17.5} h={21} />
+      <Item id="focus" label="Tập trung" icon={IMG.tabTimer} w={17} h={20} />
+    </View>
+  );
+}
+
+const cardShadow = {
+  shadowColor: '#0F172A',
+  shadowOpacity: 0.05,
+  shadowRadius: 12,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 1,
+} as const;
+
+const raw = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.white },
+  scroll: { paddingHorizontal: 18, paddingTop: 15, paddingBottom: 150 },
+
+  // Header (cao 40)
+  header: {
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  brand: { flexDirection: 'row', alignItems: 'center' },
+  logo: { width: 56.5, height: 33, marginLeft: 0.5 },
+  brandName: {
+    marginLeft: 13,
+    fontFamily: F.bold,
+    fontSize: 19.5,
+    lineHeight: 24,
+    letterSpacing: -0.4,
+    color: C.primary,
+  },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
+  bellBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  bellDot: {
+    position: 'absolute',
+    top: 7.25,
+    left: 19.25,
+    width: 11,
+    height: 11,
+    borderRadius: 5.5,
+    backgroundColor: C.red,
+    borderWidth: 1.5,
+    borderColor: C.white,
+  },
+  avatarBtn: {
+    marginLeft: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: C.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    fontFamily: F.bold,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 0.2,
+    color: C.white,
+  },
+
+  // Lời chào
+  greet: {
+    marginTop: 28.2,
+    marginLeft: 4,
+    fontFamily: F.regular,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: -0.15,
+    color: C.body,
+  },
+  title: {
+    marginTop: 7.4,
+    marginLeft: 4,
+    fontFamily: F.extra,
+    fontSize: 26.5,
+    lineHeight: 32,
+    letterSpacing: -1.56,
+    color: C.primary,
+  },
+  titleRed: { color: C.red },
+
+  // Ô tìm kiếm (cao 50)
+  search: {
+    marginTop: 15.9,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: C.searchBg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 15,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    marginLeft: 10,
+    padding: 0,
+    fontFamily: F.regular,
+    fontSize: 13,
+    letterSpacing: -0.17,
+    color: C.body,
+  },
+  filterBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: C.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Thẻ Study Radar (cao 252)
+  radarCard: {
+    marginTop: 16.5,
+    height: 253,
+    borderRadius: 30,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.line,
+    overflow: 'hidden',
+    ...cardShadow,
+  },
+  ring: { position: 'absolute', borderWidth: 1 },
+  ring1: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    left: 212,
+    top: 16,
+    borderColor: C.ring1,
+  },
+  ring2: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    left: 182,
+    top: -14,
+    borderColor: C.ring2,
+  },
+  ring3: {
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    left: 152,
+    top: -44,
+    borderColor: C.ring3,
+  },
+  radarBadge: {
+    position: 'absolute',
+    left: 284,
+    top: 31.5,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: C.yellow,
+    shadowColor: C.yellow,
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  radarIcon: { position: 'absolute', left: 14, top: 14, width: 28, height: 24.5 },
+  radarLabel: {
+    position: 'absolute',
+    left: 24,
+    top: 28.2,
+    fontFamily: F.extra,
+    fontSize: 11.5,
+    lineHeight: 14,
+    letterSpacing: -0.13,
+    color: C.red,
+  },
+  radarTitle: {
+    position: 'absolute',
+    left: 24,
+    top: 48.9,
+    fontFamily: F.extra,
+    fontSize: 20.5,
+    lineHeight: 27,
+    letterSpacing: -0.9,
+    color: C.primary,
+  },
+  radarDesc: {
+    position: 'absolute',
+    left: 24,
+    top: 107.7,
+    fontFamily: F.regular,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: -0.15,
+    color: C.body,
+  },
+  readyRow: {
+    position: 'absolute',
+    left: 24,
+    top: 167,
+    width: 316,
+    height: 43.5,
+    borderRadius: 21.75,
+    backgroundColor: C.searchBg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16.5,
+    paddingRight: 16,
+  },
+  readyDot: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: C.green },
+  readyText: {
+    flex: 1,
+    marginLeft: 9,
+    fontFamily: F.semi,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: -0.22,
+    color: C.primary,
+  },
+  track: { width: 48, height: 24, borderRadius: 12, justifyContent: 'center' },
+  trackOn: { backgroundColor: C.primary },
+  trackOff: { backgroundColor: '#CBD5E1' },
+  thumb: {
+    position: 'absolute',
+    top: 2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: C.white,
+  },
+  thumbOn: { left: 26 },
+  thumbOff: { left: 2 },
+
+  // Hai thẻ hành động (cao 70)
+  action: {
+    marginTop: 16,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 20,
+  },
+  scanAction: { backgroundColor: C.scanBg, borderColor: C.scanBorder },
+  pomoAction: { backgroundColor: C.pomoBg, borderColor: C.pomoBorder },
+  actionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: C.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionText: { flex: 1, marginLeft: 14, paddingBottom: 3 },
+  actionTitle: {
+    fontFamily: F.bold,
+    fontSize: 14.5,
+    lineHeight: 20,
+    letterSpacing: -0.3,
+    color: C.primary,
+  },
+  actionSub: {
+    marginTop: 3.6,
+    fontFamily: F.regular,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: -0.15,
+    color: C.body,
+  },
+  actionChev: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Đang học gần bạn
+  sectionRow: {
+    marginTop: 26.3,
+    height: 24,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    fontFamily: F.extra,
+    fontSize: 17.5,
+    lineHeight: 24,
+    letterSpacing: -0.45,
+    color: C.primary,
+  },
+  sectionAll: {
+    marginTop: 4.85,
+    fontFamily: F.semi,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: -0.09,
+    color: C.primary,
+  },
+
+  // Thẻ bạn học gần bạn (cao 75)
+  nearCard: {
+    marginTop: 13.2,
+    height: 75,
+    borderRadius: 30,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.line,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 20,
+    ...cardShadow,
+  },
+  nearAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nearInitials: {
+    fontFamily: F.bold,
+    fontSize: 14,
+    lineHeight: 20,
+    color: C.primary,
+  },
+  nearText: { flex: 1, marginLeft: 14 },
+  nearName: {
+    fontFamily: F.bold,
+    fontSize: 14.5,
+    lineHeight: 20,
+    letterSpacing: -0.3,
+    color: C.primary,
+  },
+  nearSub: {
+    marginTop: 2,
+    fontFamily: F.regular,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: -0.15,
+    color: C.body,
+  },
+  nearChev: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: C.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Thanh tab nổi (cao 70)
+  tabBar: {
+    position: 'absolute',
+    left: 17,
+    right: 17,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: 1,
+    borderColor: 'rgba(241,245,249,0.9)',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.06,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  tabItem: { width: 67, height: 68 },
+  tabIconBox: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    right: 0,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabLabel: {
+    position: 'absolute',
+    top: 40.3,
+    left: -8,
+    right: -8,
+    textAlign: 'center',
+    fontSize: 10.5,
+    lineHeight: 14,
+    letterSpacing: -0.3,
+  },
+  tabLabelOn: { fontFamily: F.bold, color: C.primary },
+  tabLabelOff: { fontFamily: F.medium, color: C.tabMuted },
+  fab: {
+    position: 'absolute',
+    top: 12,
+    left: 11.5,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: C.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: C.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+});
