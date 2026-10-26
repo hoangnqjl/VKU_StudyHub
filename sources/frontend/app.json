@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "VKU StudyHub",
+    "slug": "vku-studyhub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F1629"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "vn.edu.vku.studyhub",
+      "infoPlist": {
+        "NSCameraUsageDescription": "VKU StudyHub cần camera để quét mã QR tài liệu và phòng Pomodoro."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F1629"
+      },
+      "package": "vn.edu.vku.studyhub",
+      "permissions": ["CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "VKU StudyHub cần quyền camera để quét mã QR."
+        }
+      ]
+    ],
+    "scheme": "vku-studyhub",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
