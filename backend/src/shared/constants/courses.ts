@@ -41,6 +41,13 @@ export const VKU_SAMPLE_COURSES: Course[] = [
     name: 'Xác suất thống kê',
     faculty: 'Bộ môn Khoa học Cơ bản',
     credits: 3
+  },
+  {
+    code: 'ANY',
+    name: 'Tự học tự do (Môn bất kỳ)',
+    faculty: 'Toàn trường',
+    credits: 0
   }
 ];
+
 

@@ -8,6 +8,8 @@ export interface AuthRequest extends Request {
     id: string;
     studentId: string;
     email: string;
+    fullName?: string;
+    avatarUrl?: string;
   };
 }
 

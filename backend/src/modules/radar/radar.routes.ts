@@ -1,23 +1,30 @@
 import { Router } from 'express';
 import { radarController } from './radar.controller';
 import { validate } from '../../middlewares/validate.middleware';
-import { checkInSchema, joinTableRequestSchema, updateJoinRequestSchema } from './radar.schema';
+import {
+  checkInSchema,
+  extendCheckInSchema,
+  joinTableRequestSchema,
+  updateJoinRequestSchema
+} from './radar.schema';
 import { optionalAuth } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
-// Location list & active buddies
-router.get('/locations', radarController.getLocations);
-router.get('/buddies', radarController.getBuddies);
+// 1. Tra cứu danh mục địa điểm & Bạn học đang sáng đèn
+router.get('/locations', optionalAuth, radarController.getLocations);
+router.get('/buddies', optionalAuth, radarController.getBuddies);
 
-// Check-in / Checkout status
+// 2. Vòng đời Check-in / Gia hạn 4 tiếng (So sánh IP) / Checkout
 router.post('/checkin', optionalAuth, validate(checkInSchema), radarController.checkIn);
+router.post('/extend', optionalAuth, validate(extendCheckInSchema), radarController.extendCheckIn);
 router.post('/checkout', optionalAuth, radarController.checkOut);
 
-// Table join requests
+// 3. Quy trình Lời mời Ghép bàn học (Thời hạn 5 phút)
 router.post('/join-request', optionalAuth, validate(joinTableRequestSchema), radarController.sendJoinRequest);
 router.get('/join-requests', optionalAuth, radarController.getJoinRequests);
-router.patch('/join-requests/:requestId', optionalAuth, validate(updateJoinRequestSchema), radarController.updateJoinRequest);
+router.get('/join-requests/badge', optionalAuth, radarController.getBadgeCount);
+router.patch('/join-requests/:requestId/respond', optionalAuth, validate(updateJoinRequestSchema), radarController.respondJoinRequest);
+router.patch('/join-requests/:requestId/cancel', optionalAuth, radarController.cancelJoinRequest);
 
 export default router;
-
