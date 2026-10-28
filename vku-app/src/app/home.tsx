@@ -1,8 +1,17 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useDesign } from '../components/design-scale';
+import StudyHubTabBar from '../components/study-hub-tab-bar';
 import {
   useFonts,
   Inter_400Regular,
@@ -24,11 +33,6 @@ const IMG = {
   scanChev: require('../../assets/images/home/scan-chev.png'),
   pomo: require('../../assets/images/home/pomo.png'),
   pomoChev: require('../../assets/images/home/pomo-chev.png'),
-  tabHome: require('../../assets/images/home/tab-home.png'),
-  tabRadar: require('../../assets/images/home/tab-radar.png'),
-  tabDocs: require('../../assets/images/home/tab-docs.png'),
-  tabTimer: require('../../assets/images/home/tab-timer.png'),
-  plus: require('../../assets/images/home/plus.png'),
 };
 
 // ====== Màu đo từ ảnh thiết kế ======
@@ -94,6 +98,12 @@ export default function HomeScreen() {
 
   if (!fontsLoaded) return null;
 
+  const search = () => {
+    const searchQuery = query.trim();
+    if (!searchQuery) return;
+    router.push({ pathname: '/search-results', params: { query: searchQuery } } as any);
+  };
+
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView
@@ -108,7 +118,12 @@ export default function HomeScreen() {
             <Text style={s.brandName}>Study Hub</Text>
           </View>
           <View style={s.headerRight}>
-            <Pressable style={s.bellBtn}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Xem lời mời ghép bàn"
+              style={s.bellBtn}
+              onPress={() => router.push('/table-invitation' as any)}
+            >
               <Image source={IMG.bell} style={{ width: z(19), height: z(21) }} />
               <View style={s.bellDot} />
             </Pressable>
@@ -126,7 +141,14 @@ export default function HomeScreen() {
 
         {/* ===== Ô tìm kiếm ===== */}
         <View style={s.search}>
-          <Image source={IMG.search} style={{ width: z(15), height: z(15) }} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Tìm kiếm"
+            onPress={search}
+            hitSlop={8}
+          >
+            <Image source={IMG.search} style={{ width: z(15), height: z(15) }} />
+          </Pressable>
           <TextInput
             style={s.searchInput}
             placeholder="Tìm bạn, môn học, tài liệu..."
@@ -134,6 +156,7 @@ export default function HomeScreen() {
             value={query}
             onChangeText={setQuery}
             returnKeyType="search"
+            onSubmitEditing={search}
           />
           <Pressable style={s.filterBtn}>
             <Image source={IMG.filter} style={{ width: z(13), height: z(11) }} />
@@ -170,7 +193,12 @@ export default function HomeScreen() {
         </View>
 
         {/* ===== Quét tài liệu ===== */}
-        <Pressable style={[s.action, s.scanAction]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Quét mã nhận tài liệu"
+          onPress={() => router.push('/scan-document')}
+          style={[s.action, s.scanAction]}
+        >
           <View style={s.actionIcon}>
             <Image source={IMG.scan} style={{ width: z(20), height: z(20.5) }} />
           </View>
@@ -184,7 +212,12 @@ export default function HomeScreen() {
         </Pressable>
 
         {/* ===== Pomodoro ===== */}
-        <Pressable style={[s.action, s.pomoAction, { marginTop: z(12) }]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Mở phòng học Pomodoro"
+          onPress={() => router.push('/focus' as any)}
+          style={[s.action, s.pomoAction, { marginTop: z(12) }]}
+        >
           <View style={s.actionIcon}>
             <Image source={IMG.pomo} style={{ width: z(20), height: z(23.5) }} />
           </View>
@@ -204,7 +237,16 @@ export default function HomeScreen() {
         </View>
 
         {NEARBY.map((p, i) => (
-          <View key={p.id} style={[s.nearCard, i > 0 && { marginTop: z(12) }]}>
+          <Pressable
+            key={p.id}
+            accessibilityRole="button"
+            accessibilityLabel={`Xem hồ sơ sinh viên ${p.name}`}
+            onPress={() => router.push({
+              pathname: '/student-profile',
+              params: { studentId: p.id, name: p.name },
+            } as any)}
+            style={[s.nearCard, i > 0 && { marginTop: z(12) }]}
+          >
             <View style={[s.nearAvatar, { backgroundColor: p.color }]}>
               <Text style={s.nearInitials}>{p.initials}</Text>
             </View>
@@ -219,63 +261,13 @@ export default function HomeScreen() {
             <View style={s.nearChev}>
               <Image source={IMG.arrow} style={{ width: z(14), height: z(14.5) }} />
             </View>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
 
       {/* ===== Thanh điều hướng dưới ===== */}
-      <TabBar s={s} z={z} bottom={Math.max(insets.bottom - 20, 13)} />
+      <StudyHubTabBar active="home" bottom={Math.max(insets.bottom - 20, 13)} />
     </SafeAreaView>
-  );
-}
-
-function TabBar({
-  s,
-  z,
-  bottom,
-}: {
-  s: Record<string, any>;
-  z: (n: number) => number;
-  bottom: number;
-}) {
-  const [active, setActive] = useState('home');
-
-  const Item = ({
-    id,
-    label,
-    icon,
-    w,
-    h,
-  }: {
-    id: string;
-    label: string;
-    icon: any;
-    w: number;
-    h: number;
-  }) => {
-    const on = active === id;
-    return (
-      <Pressable style={s.tabItem} onPress={() => setActive(id)}>
-        <View style={s.tabIconBox}>
-          <Image source={icon} style={{ width: z(w), height: z(h) }} />
-        </View>
-        <Text style={[s.tabLabel, on ? s.tabLabelOn : s.tabLabelOff]}>{label}</Text>
-      </Pressable>
-    );
-  };
-
-  return (
-    <View style={[s.tabBar, { bottom }]} pointerEvents="box-none">
-      <Item id="home" label="Trang chủ" icon={IMG.tabHome} w={18} h={17.5} />
-      <Item id="radar" label="Radar" icon={IMG.tabRadar} w={20.5} h={21} />
-      <View style={s.tabItem}>
-        <Pressable style={s.fab}>
-          <Image source={IMG.plus} style={{ width: z(19), height: z(19) }} />
-        </Pressable>
-      </View>
-      <Item id="docs" label="Tài liệu" icon={IMG.tabDocs} w={17.5} h={21} />
-      <Item id="focus" label="Tập trung" icon={IMG.tabTimer} w={17} h={20} />
-    </View>
   );
 }
 
@@ -642,61 +634,4 @@ const raw = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // Thanh tab nổi (cao 70)
-  tabBar: {
-    position: 'absolute',
-    left: 17,
-    right: 17,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'rgba(255,255,255,0.96)',
-    borderWidth: 1,
-    borderColor: 'rgba(241,245,249,0.9)',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
-  },
-  tabItem: { width: 67, height: 68 },
-  tabIconBox: {
-    position: 'absolute',
-    top: 10,
-    left: 0,
-    right: 0,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabLabel: {
-    position: 'absolute',
-    top: 40.3,
-    left: -8,
-    right: -8,
-    textAlign: 'center',
-    fontSize: 10.5,
-    lineHeight: 14,
-    letterSpacing: -0.3,
-  },
-  tabLabelOn: { fontFamily: F.bold, color: C.primary },
-  tabLabelOff: { fontFamily: F.medium, color: C.tabMuted },
-  fab: {
-    position: 'absolute',
-    top: 12,
-    left: 11.5,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: C.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: C.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
-  },
 });

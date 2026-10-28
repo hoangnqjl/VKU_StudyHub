@@ -129,7 +129,12 @@ export default function ProfileScreen() {
             <Image source={IMG.back} style={{ width: z(9), height: z(12.5) }} />
           </Pressable>
           <Text style={s.headerTitle}>Hồ sơ sinh viên</Text>
-          <Pressable style={s.circleBtn}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cài đặt ứng dụng"
+            onPress={() => router.push('/app-settings' as any)}
+            style={s.circleBtn}
+          >
             <Image source={IMG.gear} style={{ width: z(19), height: z(21) }} />
           </Pressable>
         </View>
