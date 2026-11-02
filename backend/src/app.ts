@@ -27,6 +27,7 @@ app.get('/api/health', (req: Request, res: Response) => {
       service: 'VKU StudyHub Backend API',
       status: 'UP',
       uptime: process.uptime(),
+      realtime: 'Socket.IO (Pomodoro Realtime Sync Enabled)',
       timestamp: new Date().toISOString(),
       modules: ['auth', 'radar', 'documents', 'pomodoro']
     },
