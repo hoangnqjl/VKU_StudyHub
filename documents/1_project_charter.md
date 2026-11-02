@@ -115,13 +115,13 @@
 | Milestone | Target Week | Major Deliverables | Responsible Role |
 | :---: | :---: | :--- | :--- |
 | **M1** | Week 2 | Hoàn thiện Project Charter và WBS cho Mobile App & Khởi tạo GitHub Projects | PM & Cả nhóm |
-| **M2** | Weeks 3–4 | cấu trúc WBS & Ma trận RTM | BA (Tạ Kim Hương) & PM |
-| **M3** | Week 5 | Sprint 1: Khởi tạo project React Native (Expo), thiết lập Auth & CSDL | Toàn bộ nhóm |
-| **M4** | Weeks 6–7 | Sprint 1 Review: Xong kho tài liệu & Module tạo/quét mã QR; Báo cáo rủi ro #1 | Dev Team & PM |
-| **M5** | Weeks 8–9 | **Midterm Milestone:** Demo ứng dụng trực tiếp trên điện thoại (Tính năng Radar + QR Share) | Toàn bộ nhóm |
-| **M6** | Weeks 10–12 | Sprint 2 Review: Hoàn thiện đồng hồ Pomodoro nhóm & Quản lý phạm vi rủi ro #2 | Toàn bộ nhóm |
-| **M7** | Week 13 | Đóng gói bản phát hành Android APK & Hoàn tất thử nghiệm người dùng (UAT) | Toàn bộ nhóm |
-| **M8** | Week 14 | Hoàn thiện toàn bộ hồ sơ bằng chứng kỹ thuật (Audit Evidence Package) | Toàn bộ nhóm |
+| **M2** | Weeks 3–4 | Cấu trúc WBS chi tiết & Ma trận yêu cầu RTM | BA (Tạ Kim Hương) & PM |
+| **M3** | Week 5 | **Sprint 1 Khởi động:** Thiết lập kiến trúc Expo (Frontend), Node.js (Backend) & CSDL Cloud; Hoàn thành thiết kế UX/UI Wireframe cho cả 4 module | Toàn bộ nhóm |
+| **M4** | Weeks 6–7 | **Sprint 1 Review:** Hoàn thành lập trình độc lập Frontend & Backend cho 4 Phân hệ (Module 1, 2, 3, 4); Kiểm thử Prototype lần 1; Báo cáo rủi ro Sprint 1 | Dev Team & PM |
+| **M5** | Weeks 8–9 | **Midterm Milestone / Bắt đầu Sprint 2:** Khởi động kết nối Frontend - Backend (Module 1 #40), triển khai Kiểm thử Frontend (#38), Demo ứng dụng trực tiếp trên thiết bị | Toàn bộ nhóm |
+| **M6** | Weeks 10–12 | **Sprint 2 Review:** Hoàn thiện tích hợp FE-BE toàn diện (Module 2, 3, 4 Pomodoro đồng bộ), kiểm thử hệ thống & an toàn bảo mật; Báo cáo rủi ro Sprint 2 | Toàn bộ nhóm |
+| **M7** | Week 13 | Đóng gói bản phát hành Android APK (Expo EAS Build) & Hoàn tất thử nghiệm người dùng (UAT với 5–8 sinh viên VKU) | Toàn bộ nhóm |
+| **M8** | Week 14 | Hoàn thiện toàn bộ hồ sơ bằng chứng kỹ thuật (Audit Evidence Package) & Hướng dẫn vận hành | Toàn bộ nhóm |
 | **M9** | Week 15 | **Bảo vệ đồ án cuối kỳ & Trình bày trực tiếp ứng dụng di động trước Hội đồng** | Toàn bộ nhóm |
 
 ---
@@ -133,7 +133,9 @@
 
 ### 9.2. Methodology Justification
 - **Trải nghiệm ứng dụng di động đòi hỏi phản hồi nhanh:** Việc phát triển app trên di động cần liên tục kiểm tra thực tế trên màn hình smartphone (cảm ứng, bố cục nút bấm, camera quét QR). Chu kỳ Sprint ngắn giúp nhóm kịp thời tối ưu giao diện UI/UX.
-- **Giảm thiểu rủi ro tích hợp:** Xây dựng tính năng theo từng gói nhỏ (Auth → QR Scan → Radar) giúp nhóm luôn có sẵn một phiên bản app chạy được ổn định để báo cáo qua từng mốc M1–M9.
+- **Chiến lược phân chia hai Sprint rõ ràng và kiểm soát rủi ro chất lượng:**
+  - **Sprint 1 (Xây dựng nền tảng & Lập trình phân hệ độc lập):** Tập trung hoàn thành khảo sát nhu cầu/painpoints, thiết kế UX/UI wireframe, khởi tạo kiến trúc hạ tầng và lập trình độc lập các component giao diện Frontend cũng như dịch vụ API Backend cho cả 4 phân hệ (Auth/Profile, Study Radar, Fast QR Sharing, Pomodoro timer) cùng các bài test prototype/unit sơ bộ.
+  - **Sprint 2 (Kết nối Frontend - Backend, Kiểm thử chuyên sâu & Nghiệm thu phát hành):** Toàn bộ công tác kết nối Frontend - Backend (bắt đầu từ Module 1 #40 và mở rộng ra tất cả module), kiểm thử Frontend độc lập (#38), kiểm thử tích hợp toàn diện hệ thống, kiểm tra quyền camera và ngoại lệ mạng, đóng gói file cài đặt Android APK (EAS Build), thực nghiệm người dùng UAT và hoàn thiện hồ sơ nghiệm thu cuối kỳ đều được triển khai tập trung trong Sprint 2.
 
 ---
 
