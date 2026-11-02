@@ -123,7 +123,9 @@ backend/
 | `POST` | `/api/documents/qr/claim/:qrToken` | Quét mã QR để nhận & lưu ngay tài liệu vào kho cá nhân |
 | `GET` | `/api/documents/saved` | Xem danh sách "Tài liệu của tôi" đã lưu |
 
-### 5. Module 4: Shared Study Timer / Pomodoro (`/api/pomodoro`)
+### 5. Module 4: Shared Study Timer / Pomodoro (`/api/pomodoro` & Realtime Socket.IO)
+
+#### 🔹 RESTful API Endpoints
 | Phương thức | Endpoint | Mô tả |
 | :--- | :--- | :--- |
 | `GET` | `/api/pomodoro/rooms` | Danh sách phòng Pomodoro học nhóm đang hoạt động |
@@ -131,7 +133,27 @@ backend/
 | `POST` | `/api/pomodoro/rooms` | Tạo phòng Pomodoro học nhóm mới (25p học / 5p nghỉ) |
 | `POST` | `/api/pomodoro/rooms/:id/join` | Tham gia vào phòng học nhóm |
 | `POST` | `/api/pomodoro/rooms/:id/leave` | Rời khỏi phòng học nhóm |
-| `PATCH` | `/api/pomodoro/rooms/:id/timer` | Điều khiển đồng hồ (START, PAUSE, RESET, NEXT_PHASE) |
+| `PATCH` | `/api/pomodoro/rooms/:id/timer` | Điều khiển đồng hồ (`START`, `PAUSE`, `RESET`, `NEXT_PHASE`, `SWITCH_MODE`) |
+| `GET` | `/api/pomodoro/rooms/:id/messages` | Lấy lịch sử tin nhắn trao đổi trong phòng học |
+| `POST` | `/api/pomodoro/rooms/:id/messages` | Gửi tin nhắn động viên vào phòng học |
+| `POST` | `/api/pomodoro/rooms/:id/reactions` | Thả biểu cảm cổ vũ (🔥, 👏, ☕, 💪) |
+
+#### ⚡ Realtime WebSocket Events (Socket.IO `ws://localhost:5000`)
+| Hướng | Tên Sự kiện | Payload mẫu | Ý nghĩa / Hành vi |
+| :--- | :--- | :--- | :--- |
+| **Client $\rightarrow$ Server** | `pomodoro:join` | `{ "roomId": "room_xxx", "user": { ... } }` | Tham gia vào phòng đếm ngược Realtime |
+| **Server $\rightarrow$ Client** | `pomodoro:room_state` | `{ "room": { ... }, "serverTime": "..." }` | Gửi toàn bộ dữ liệu & tin nhắn phòng cho thành viên vừa vào |
+| **Server $\rightarrow$ Client** | `pomodoro:user_joined` | `{ "roomId": "...", "user": { ... }, "participants": [...] }` | Thông báo tới tất cả thành viên trong phòng khi có bạn mới vào |
+| **Client $\rightarrow$ Server** | `pomodoro:timer_action` | `{ "roomId": "...", "action": "START" }` | Host bấm Bắt đầu / Tạm dừng / Đặt lại / Chuyển pha đếm ngược |
+| **Server $\rightarrow$ Client** | `pomodoro:timer_state` | `{ "status": "RUNNING", "remainingSeconds": 1500, ... }` | Phát trạng thái đồng hồ cập nhật tới mọi client |
+| **Server $\rightarrow$ Client** | `pomodoro:tick` | `{ "remainingSeconds": 1499, "currentMode": "FOCUS" }` | Phát sóng thời gian đếm ngược chính xác mỗi giây từ server |
+| **Server $\rightarrow$ Client** | `pomodoro:phase_changed` | `{ "previousMode": "FOCUS", "currentMode": "SHORT_BREAK", "message": "..." }` | Thông báo khi chuyển pha (Tập trung $\leftrightarrow$ Nghỉ giải lao) |
+| **Client $\rightarrow$ Server** | `pomodoro:send_message` | `{ "roomId": "...", "message": "Cùng cố gắng nhé!" }` | Gửi tin nhắn trao đổi realtime trong phòng |
+| **Server $\rightarrow$ Client** | `pomodoro:new_message` | `{ "id": "...", "userName": "...", "message": "..." }` | Phát tin nhắn mới tức thì tới tất cả thành viên |
+| **Client $\rightarrow$ Server** | `pomodoro:send_reaction` | `{ "roomId": "...", "emoji": "🔥" }` | Thả biểu cảm cảm xúc cổ vũ realtime |
+| **Server $\rightarrow$ Client** | `pomodoro:new_reaction` | `{ "userName": "...", "emoji": "🔥", "timestamp": "..." }` | Hiệu ứng biểu cảm hiển thị tức thì trên màn hình |
+| **Client $\rightarrow$ Server** | `pomodoro:leave` | `{ "roomId": "...", "userId": "..." }` | Rời khỏi phòng học |
+| **Server $\rightarrow$ Client** | `pomodoro:user_left` | `{ "userId": "...", "userName": "...", "participants": [...] }` | Thông báo khi có thành viên rời phòng hoặc mất kết nối |
 
 ---
 

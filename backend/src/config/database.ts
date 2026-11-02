@@ -55,6 +55,53 @@ export const initDatabaseTables = async (): Promise<boolean> => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    // 4. Table pomodoro_rooms (Module 4: Shared Study Timer)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS pomodoro_rooms (
+        id VARCHAR(36) PRIMARY KEY,
+        title VARCHAR(150) NOT NULL,
+        course_code VARCHAR(20) NOT NULL,
+        course_name VARCHAR(150),
+        host_id VARCHAR(36) NOT NULL,
+        host_name VARCHAR(100) NOT NULL,
+        focus_duration_minutes INT DEFAULT 25,
+        break_duration_minutes INT DEFAULT 5,
+        current_mode ENUM('FOCUS', 'SHORT_BREAK', 'LONG_BREAK') DEFAULT 'FOCUS',
+        status ENUM('PAUSED', 'RUNNING', 'COMPLETED') DEFAULT 'PAUSED',
+        remaining_seconds INT NOT NULL,
+        started_at TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // 5. Table pomodoro_participants
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS pomodoro_participants (
+        room_id VARCHAR(36) NOT NULL,
+        user_id VARCHAR(36) NOT NULL,
+        full_name VARCHAR(100) NOT NULL,
+        avatar_url TEXT,
+        is_host BOOLEAN DEFAULT FALSE,
+        joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (room_id, user_id),
+        FOREIGN KEY (room_id) REFERENCES pomodoro_rooms(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // 6. Table pomodoro_messages
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS pomodoro_messages (
+        id VARCHAR(36) PRIMARY KEY,
+        room_id VARCHAR(36) NOT NULL,
+        user_id VARCHAR(36) NOT NULL,
+        user_name VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (room_id) REFERENCES pomodoro_rooms(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
     // Seed sample courses if table is empty
     const [existingCourses]: any = await connection.query('SELECT COUNT(*) as count FROM courses');
     if (existingCourses[0]?.count === 0) {
@@ -70,7 +117,7 @@ export const initDatabaseTables = async (): Promise<boolean> => {
       console.log('🌱 [Database] Đã khởi tạo dữ liệu môn học mẫu cho bảng courses');
     }
 
-    console.log('✅ [Database] Đã khởi tạo & đồng bộ cấu trúc bảng Module 1 thành công');
+    console.log('✅ [Database] Đã khởi tạo & đồng bộ cấu trúc bảng Module 1 & Module 4 (Pomodoro) thành công');
     connection.release();
     return true;
   } catch (error: any) {

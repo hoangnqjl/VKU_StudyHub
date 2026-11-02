@@ -370,7 +370,7 @@ class AuthService {
     // Saved documents count
     const savedDocs = documentService.getSavedDocuments(userId);
     // Active pomodoro rooms
-    const activeRooms = pomodoroService.getRooms();
+    const activeRooms = await pomodoroService.getRooms();
 
     // Enrolled courses details
     const availableCourses = await this.getAvailableCourses();
