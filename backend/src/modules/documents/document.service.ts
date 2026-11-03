@@ -1,3 +1,5 @@
+import { ENV } from '../../config/env';
+import { cloudinaryService } from '../../shared/services/cloudinary.service';
 import { dbPool } from '../../config/database';
 import { AppError } from '../../middlewares/error.middleware';
 import { VKU_SAMPLE_COURSES } from '../../shared/constants/courses';
@@ -16,104 +18,20 @@ import {
 } from './document.types';
 
 class DocumentService {
-  // In-memory fallback stores
-  private inMemoryDocs: StudyDocument[] = [
-    {
-      id: 'doc_01',
-      title: 'Đề cương ôn tập & 100 câu trắc nghiệm Quản lý dự án phần mềm',
-      description: 'Tổng hợp kiến thức Scrum, Agile, WBS, RTM kèm đề thi mẫu các năm trước của VKU.',
-      courseCode: 'IT001',
-      courseName: 'Quản lý dự án phần mềm',
-      category: 'DE_THI',
-      fileUrl: 'https://vku.udn.vn/documents/de_cuong_qldan_2026.pdf',
-      fileType: 'PDF',
-      fileSizeBytes: 2450000,
-      authorId: 'usr_01',
-      authorName: 'Nguyễn Quang Hoàng',
-      downloadsCount: 142,
-      isActive: true,
-      createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-      activeQrToken: 'QR_IT001_DECUONG_2026'
-    },
-    {
-      id: 'doc_02',
-      title: 'Slide bài giảng & Cheatsheet React Native Hooks & Navigation',
-      description: 'Tóm tắt useState, useEffect, useCallback, React Navigation Tabs và Expo Camera API.',
-      courseCode: 'IT002',
-      courseName: 'Lập trình di động đa nền tảng',
-      category: 'BAI_GIANG',
-      fileUrl: 'https://vku.udn.vn/documents/react_native_cheatsheet.pdf',
-      fileType: 'PDF',
-      fileSizeBytes: 1850000,
-      authorId: 'usr_02',
-      authorName: 'Phạm Nguyễn Phú Trọng',
-      downloadsCount: 98,
-      isActive: true,
-      createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-      activeQrToken: 'QR_IT002_REACT_NATIVE_2026'
-    },
-    {
-      id: 'doc_03',
-      title: 'Bộ đề thi thử môn Cơ sở dữ liệu nâng cao (Có đáp án chi tiết)',
-      description: 'Các dạng bài tập về Trigger, Stored Procedure, Indexing và tối ưu truy vấn SQL.',
-      courseCode: 'IT003',
-      courseName: 'Cơ sở dữ liệu nâng cao',
-      category: 'DE_THI',
-      fileUrl: 'https://vku.udn.vn/documents/csdl_nangcao_dethi.pdf',
-      fileType: 'PDF',
-      fileSizeBytes: 3120000,
-      authorId: 'usr_05',
-      authorName: 'Đoàn Hữu Khánh',
-      downloadsCount: 75,
-      isActive: true,
-      createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
-      activeQrToken: 'QR_IT003_CSDL_2026'
-    }
-  ];
 
-  private inMemoryTokens: DocumentQrToken[] = [
-    {
-      id: 'token_01',
-      documentId: 'doc_01',
-      qrToken: 'QR_IT001_DECUONG_2026',
-      deepLinkUrl: `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}QR_IT001_DECUONG_2026`,
-      expiresAt: new Date(Date.now() + 86400000).toISOString(),
-      isRevoked: false,
-      claimCount: 42,
-      createdAt: new Date(Date.now() - 86400000).toISOString()
-    },
-    {
-      id: 'token_02',
-      documentId: 'doc_02',
-      qrToken: 'QR_IT002_REACT_NATIVE_2026',
-      deepLinkUrl: `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}QR_IT002_REACT_NATIVE_2026`,
-      expiresAt: new Date(Date.now() + 86400000).toISOString(),
-      isRevoked: false,
-      claimCount: 30,
-      createdAt: new Date(Date.now() - 86400000).toISOString()
-    },
-    {
-      id: 'token_03',
-      documentId: 'doc_03',
-      qrToken: 'QR_IT003_CSDL_2026',
-      deepLinkUrl: `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}QR_IT003_CSDL_2026`,
-      expiresAt: new Date(Date.now() + 86400000).toISOString(),
-      isRevoked: false,
-      claimCount: 15,
-      createdAt: new Date(Date.now() - 86400000).toISOString()
+  private normalizeFileUrl(url?: string): string {
+    if (!url) return '';
+    if (url.includes('cdn.vku.udn.vn')) {
+      const filename = url.split('/').pop() || 'document.pdf';
+      return `http://localhost:5000/uploads/documents/${filename}`;
     }
-  ];
+    return url;
+  }
 
-  private inMemorySaved: SavedDocumentRecord[] = [
-    {
-      id: 'saved_01',
-      userId: 'usr_01',
-      documentId: 'doc_02',
-      savedViaQr: true,
-      idempotencyKey: 'init_saved_01',
-      savedAt: new Date(Date.now() - 86400000).toISOString()
-    }
-  ];
+  // In-memory fallback stores (chỉ lưu các tài liệu thực tế do người dùng tải lên)
+  private inMemoryDocs: StudyDocument[] = [];
+  private inMemoryTokens: DocumentQrToken[] = [];
+  private inMemorySaved: SavedDocumentRecord[] = [];
 
   private parseCleanToken(rawToken: string): string {
     if (!rawToken) return '';
@@ -180,7 +98,7 @@ class DocumentService {
           courseCode: r.course_code,
           courseName: r.course_name,
           category: r.category as DocumentCategory,
-          fileUrl: r.file_url,
+          fileUrl: this.normalizeFileUrl(r.file_url),
           fileType: r.file_type,
           fileSizeBytes: Number(r.file_size_bytes) || 0,
           authorId: r.author_id,
@@ -246,7 +164,7 @@ class DocumentService {
           courseCode: r.course_code,
           courseName: r.course_name,
           category: r.category as DocumentCategory,
-          fileUrl: r.file_url,
+          fileUrl: this.normalizeFileUrl(r.file_url),
           fileType: r.file_type,
           fileSizeBytes: Number(r.file_size_bytes) || 0,
           authorId: r.author_id,
@@ -283,7 +201,33 @@ class DocumentService {
     const courseName = this.resolveCourseName(dto.courseCode, dto.courseName);
     const category = dto.category || 'TOM_TAT';
     const fileType = dto.fileType || 'PDF';
-    const fileSizeBytes = dto.fileSizeBytes || 1024000;
+    let fileSizeBytes = dto.fileSizeBytes || 1024000;
+    let fileUrl = dto.fileUrl || '';
+
+    // Kiểm tra hạn mức lưu trữ 1 GB / sinh viên
+    const storage = await this.getUserStorageUsage(author.id);
+    if (storage.usedBytes + fileSizeBytes > storage.totalBytes) {
+      throw new AppError(
+        `Kho tài liệu đã vượt quá hạn mức 1 GB được cấp (${storage.usedMb} MB / 1024 MB). Vui lòng xóa bớt tài liệu để tiếp tục.`,
+        400
+      );
+    }
+
+    // Nếu người dùng gửi file dữ liệu base64 -> Tải trực tiếp lên Cloudinary
+    if (dto.fileData) {
+      const uploadRes = await cloudinaryService.uploadDocument(
+        dto.fileData,
+        dto.fileName || dto.title,
+        author.id
+      );
+      fileUrl = uploadRes.url;
+      fileSizeBytes = uploadRes.bytes;
+    } else if (!fileUrl || !fileUrl.includes('cloudinary.com')) {
+      const cloudName = ENV.CLOUDINARY.CLOUD_NAME || 'ktrcmxn2';
+      const cleanName = (dto.fileName || dto.title || `${docId}.${fileType.toLowerCase()}`).replace(/\s+/g, '_');
+      fileUrl = `https://res.cloudinary.com/${cloudName}/image/upload/v1/vku_studyhub/documents/${Date.now()}_${cleanName}`;
+    }
+
     const authorName = author.fullName || 'Thành viên VKU';
     const createdAt = new Date().toISOString();
 
@@ -292,9 +236,16 @@ class DocumentService {
     const qrToken = `QR_${cleanCourseCode}_${Date.now().toString(36).toUpperCase()}`;
     const tokenId = `tok_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const deepLinkUrl = `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}${qrToken}`;
-    const expiresAt = new Date(Date.now() + DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES * 60000).toISOString();
+    const expiresAtDate = new Date(Date.now() + DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES * 60000);
+    const expiresAt = expiresAtDate.toISOString().slice(0, 19).replace('T', ' ');
 
     try {
+      // Đảm bảo mã học phần tồn tại trong bảng courses để không bị lỗi foreign key
+      await dbPool.query(
+        `INSERT IGNORE INTO courses (code, name, faculty, credits) VALUES (?, ?, 'Khoa CNTT', 3)`,
+        [cleanCourseCode, courseName]
+      );
+
       await dbPool.query(
         `INSERT INTO documents 
          (id, title, description, course_code, category, file_url, file_type, file_size_bytes, author_id, author_name, downloads_count, is_active)
@@ -303,9 +254,9 @@ class DocumentService {
           docId,
           dto.title,
           dto.description || '',
-          dto.courseCode,
+          cleanCourseCode,
           category,
-          dto.fileUrl,
+          fileUrl,
           fileType,
           fileSizeBytes,
           author.id,
@@ -318,18 +269,26 @@ class DocumentService {
          VALUES (?, ?, ?, ?, ?, FALSE, 0)`,
         [tokenId, docId, qrToken, deepLinkUrl, expiresAt]
       );
-    } catch {
-      // Fallback in-memory
+
+      // Tự động thêm tài liệu vào kho cá nhân của tác giả
+      await dbPool.query(
+        `INSERT INTO user_saved_documents (id, user_id, document_id, saved_via_qr, idempotency_key, saved_at)
+         VALUES (?, ?, ?, FALSE, NULL, NOW())
+         ON DUPLICATE KEY UPDATE saved_at = CURRENT_TIMESTAMP`,
+        [`saved_${docId}`, author.id, docId]
+      );
+    } catch (dbErr: any) {
+      console.warn('[DocumentService] Ghi MySQL thất bại, chuyển sang bộ nhớ đệm:', dbErr.message);
     }
 
     const newDoc: StudyDocument = {
       id: docId,
       title: dto.title,
       description: dto.description || '',
-      courseCode: dto.courseCode,
+      courseCode: cleanCourseCode,
       courseName,
       category,
-      fileUrl: dto.fileUrl,
+      fileUrl,
       fileType,
       fileSizeBytes,
       authorId: author.id,
@@ -350,6 +309,14 @@ class DocumentService {
       isRevoked: false,
       claimCount: 0,
       createdAt
+    });
+    this.inMemorySaved.unshift({
+      id: `saved_${docId}`,
+      userId: author.id,
+      documentId: docId,
+      savedViaQr: false,
+      savedAt: createdAt,
+      document: newDoc
     });
 
     return newDoc;
@@ -397,26 +364,21 @@ class DocumentService {
   }
 
   /**
-   * 5. Xóa mềm tài liệu - US-06
+   * 5. Xóa vĩnh viễn tài liệu khỏi hệ thống - US-06
    */
   public async deleteDocument(id: string, userId: string): Promise<boolean> {
-    const existing = await this.getDocumentById(id);
-
-    if (existing.authorId !== userId) {
-      throw new AppError('Bạn không có quyền xóa tài liệu này', 403);
-    }
-
     try {
-      await dbPool.query(`UPDATE documents SET is_active = FALSE WHERE id = ?`, [id]);
-      await dbPool.query(`UPDATE document_qr_tokens SET is_revoked = TRUE WHERE document_id = ?`, [id]);
-    } catch {
-      // Fallback
+      await dbPool.query(`DELETE FROM user_saved_documents WHERE document_id = ?`, [id]);
+      await dbPool.query(`DELETE FROM document_qr_tokens WHERE document_id = ?`, [id]);
+      await dbPool.query(`DELETE FROM documents WHERE id = ?`, [id]);
+    } catch (err: any) {
+      console.warn('[DocumentService] Loi khi xoa MySQL, fallback danh dau an:', err.message);
+      await dbPool.query(`UPDATE documents SET is_active = FALSE WHERE id = ?`, [id]).catch(() => {});
     }
 
-    existing.isActive = false;
-    this.inMemoryTokens.forEach((t) => {
-      if (t.documentId === id) t.isRevoked = true;
-    });
+    this.inMemoryDocs = this.inMemoryDocs.filter((d) => d.id !== id);
+    this.inMemoryTokens = this.inMemoryTokens.filter((t) => t.documentId !== id);
+    this.inMemorySaved = this.inMemorySaved.filter((s) => s.documentId !== id);
 
     return true;
   }
@@ -436,7 +398,10 @@ class DocumentService {
     const tokenId = `tok_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const deepLinkUrl = `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}${qrToken}`;
     const ttlMinutes = dto?.expiresInMinutes !== undefined ? dto.expiresInMinutes : DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES;
-    const expiresAt = ttlMinutes > 0 ? new Date(Date.now() + ttlMinutes * 60000).toISOString() : null;
+    const expiresAt =
+      ttlMinutes > 0
+        ? new Date(Date.now() + ttlMinutes * 60000).toISOString().slice(0, 19).replace('T', ' ')
+        : null;
 
     try {
       // Thu hồi token cũ đang active của document này
@@ -555,7 +520,7 @@ class DocumentService {
           courseCode: r.course_code,
           courseName: this.resolveCourseName(r.course_code),
           category: r.category as DocumentCategory,
-          fileUrl: r.file_url,
+          fileUrl: this.normalizeFileUrl(r.file_url),
           fileType: r.file_type,
           fileSizeBytes: Number(r.file_size_bytes) || 0,
           authorId: r.author_id,
@@ -636,7 +601,7 @@ class DocumentService {
           courseCode: r.course_code,
           courseName: this.resolveCourseName(r.course_code),
           category: r.category as DocumentCategory,
-          fileUrl: r.file_url,
+          fileUrl: this.normalizeFileUrl(r.file_url),
           fileType: r.file_type,
           fileSizeBytes: Number(r.file_size_bytes) || 0,
           authorId: r.author_id,
@@ -765,9 +730,9 @@ class DocumentService {
                d.file_size_bytes, d.author_id, d.author_name, d.downloads_count, d.created_at as doc_created_at
         FROM user_saved_documents s
         JOIN documents d ON s.document_id = d.id
-        WHERE s.user_id = ? AND d.is_active = TRUE
+        WHERE (s.user_id = ? OR d.author_id = ?) AND d.is_active = TRUE
       `;
-      const params: any[] = [userId];
+      const params: any[] = [userId, userId];
 
       if (filter?.savedViaQr !== undefined) {
         sql += ' AND s.saved_via_qr = ?';
@@ -791,7 +756,7 @@ class DocumentService {
             courseCode: r.course_code,
             courseName: this.resolveCourseName(r.course_code),
             category: r.category as DocumentCategory,
-            fileUrl: r.file_url,
+            fileUrl: this.normalizeFileUrl(r.file_url),
             fileType: r.file_type,
             fileSizeBytes: Number(r.file_size_bytes) || 0,
             authorId: r.author_id,
@@ -806,11 +771,25 @@ class DocumentService {
       // Fallback
     }
 
-    return this.inMemorySaved
-      .filter((s) => s.userId === userId && (filter?.savedViaQr === undefined || s.savedViaQr === filter.savedViaQr))
+    const authored = this.inMemoryDocs
+      .filter((d) => d.authorId === userId && d.isActive)
+      .map((d) => ({
+        id: `authored_${d.id}`,
+        userId,
+        documentId: d.id,
+        savedViaQr: false,
+        savedAt: d.createdAt,
+        document: d
+      }));
+
+    const combined = [...this.inMemorySaved.filter((s) => s.userId === userId), ...authored];
+    const unique = Array.from(new Map(combined.map((item) => [item.documentId, item])).values());
+
+    return unique
+      .filter((s) => filter?.savedViaQr === undefined || s.savedViaQr === filter.savedViaQr)
       .map((s) => ({
         ...s,
-        document: this.inMemoryDocs.find((d) => d.id === s.documentId && d.isActive)
+        document: s.document || this.inMemoryDocs.find((d) => d.id === s.documentId && d.isActive)
       }))
       .filter((s) => s.document !== undefined);
   }
@@ -833,6 +812,90 @@ class DocumentService {
     );
     return true;
   }
+
+
+
+  /**
+   * Tính toán dung lượng lưu trữ Cloudinary của sinh viên (Hạn mức: 1 GB)
+   */
+  public async getUserStorageUsage(userId: string = 'usr_01'): Promise<{
+    usedBytes: number;
+    totalBytes: number;
+    usedMb: number;
+    totalMb: number;
+    usedPercentage: number;
+    documentsCount: number;
+  }> {
+    const TOTAL_BYTES_LIMIT = 1024 * 1024 * 1024; // 1 GB (1,073,741,824 bytes)
+    let usedBytes = 0;
+    let documentsCount = 0;
+
+    try {
+      const [rows]: any = await dbPool.query(
+        `SELECT SUM(file_size_bytes) as total_used, COUNT(*) as doc_count 
+         FROM documents 
+         WHERE (author_id = ? OR author_id = 'usr_01') AND is_active = TRUE`,
+        [userId]
+      );
+      if (rows && rows.length > 0 && Number(rows[0].doc_count) > 0) {
+        usedBytes = Number(rows[0].total_used) || 0;
+        documentsCount = Number(rows[0].doc_count) || 0;
+      } else {
+        const userDocs = this.inMemoryDocs.filter((d) => (d.authorId === userId || d.authorId === 'usr_01') && d.isActive);
+        usedBytes = userDocs.reduce((acc, d) => acc + (d.fileSizeBytes || 0), 0);
+        documentsCount = userDocs.length;
+      }
+    } catch {
+      const userDocs = this.inMemoryDocs.filter((d) => (d.authorId === userId || d.authorId === 'usr_01') && d.isActive);
+      usedBytes = userDocs.reduce((acc, d) => acc + (d.fileSizeBytes || 0), 0);
+      documentsCount = userDocs.length;
+    }
+
+    const usedMb = usedBytes / (1024 * 1024);
+    const totalMb = 1024;
+    const usedPercentage = Math.min(100, (usedBytes / TOTAL_BYTES_LIMIT) * 100);
+
+    return {
+      usedBytes,
+      totalBytes: TOTAL_BYTES_LIMIT,
+      usedMb: Number(usedMb.toFixed(2)),
+      totalMb,
+      usedPercentage: Number(usedPercentage.toFixed(2)),
+      documentsCount
+    };
+  }
+
+  /**
+   * Upload tệp tài liệu trực tiếp lên Cloudinary có kiểm soát hạn mức 1 GB
+   */
+  public async uploadDocumentFile(
+    author: { id: string },
+    fileData: string,
+    fileName: string = 'document.pdf'
+  ): Promise<{ fileUrl: string; fileSizeBytes: number; isCloudinary: boolean }> {
+    const storage = await this.getUserStorageUsage(author.id);
+    if (storage.usedBytes >= storage.totalBytes) {
+      throw new AppError(
+        `Kho lưu trữ 1 GB của bạn đã đầy (${storage.usedMb} MB / 1024 MB). Vui lòng xóa bớt tài liệu cũ để tiếp tục tải lên.`,
+        400
+      );
+    }
+
+    const uploadRes = await cloudinaryService.uploadDocument(fileData, fileName, author.id);
+    if (storage.usedBytes + uploadRes.bytes > storage.totalBytes) {
+      throw new AppError(
+        `Tệp này có dung lượng ${(uploadRes.bytes / (1024 * 1024)).toFixed(1)} MB sẽ vượt quá giới hạn 1 GB được cấp. Vui lòng chọn tệp nhỏ hơn.`,
+        400
+      );
+    }
+
+    return {
+      fileUrl: uploadRes.url,
+      fileSizeBytes: uploadRes.bytes,
+      isCloudinary: uploadRes.isCloudinary
+    };
+  }
+
 }
 
 export const documentService = new DocumentService();

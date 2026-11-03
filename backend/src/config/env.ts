@@ -14,6 +14,11 @@ export const ENV = {
     NAME: process.env.DB_NAME || 'vku_studyhub',
     SSL: process.env.DB_SSL === 'true'
   },
-  CORS_ORIGIN: process.env.CORS_ORIGIN || '*'
+  CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+  CLOUDINARY: {
+    CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDIARY_CLOUD_NAME || '',
+    API_KEY: process.env.CLOUDINARY_API_KEY || process.env.CLOUDIARY_API_KEY || '',
+    API_SECRET: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDIARY_API_SECRET || process.env.CLOUDIARY_SECRET || '',
+    URL: process.env.CLOUDINARY_URL || ''
+  }
 };
-

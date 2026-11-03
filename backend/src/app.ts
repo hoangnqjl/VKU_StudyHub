@@ -1,8 +1,11 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { ENV } from './config/env';
 import { loggerMiddleware } from './middlewares/logger.middleware';
 import { errorHandler } from './middlewares/error.middleware';
+import { helmetMiddleware, generalApiLimiter, sanitizeInput } from './middlewares/security.middleware';
 import apiRouter from './routes';
 import { sendSuccess, sendError } from './shared/utils/response.util';
 
@@ -15,9 +18,19 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Tăng giới hạn payload lên 50MB cho upload avatar base64 và tệp tài liệu
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(loggerMiddleware);
+
+// Phục vụ tệp tĩnh ảnh đại diện và tài liệu tải lên
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
+app.use('/documents', express.static(path.join(uploadsDir, 'documents')));
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
@@ -36,6 +49,8 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 // Mount Central API Routes
+// Giới hạn tần suất gọi API phòng chống DDoS & Brute Force
+app.use('/api', generalApiLimiter);
 app.use('/api', apiRouter);
 
 // 404 Route Handler
@@ -47,4 +62,3 @@ app.use('*', (req: Request, res: Response) => {
 app.use(errorHandler);
 
 export default app;
-

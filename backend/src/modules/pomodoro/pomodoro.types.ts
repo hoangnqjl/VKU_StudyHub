@@ -30,6 +30,7 @@ export interface PomodoroReaction {
 export interface PomodoroRoom {
   id: string;
   title: string;
+  name?: string;
   courseCode: string;
   courseName: string;
   hostId: string;

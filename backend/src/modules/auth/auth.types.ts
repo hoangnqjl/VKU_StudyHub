@@ -7,6 +7,7 @@ export interface UserProfile {
   faculty?: string;
   major?: string;
   enrolledCourses: string[];
+  academicYear?: string;
   studyGoals?: string;
   createdAt: string;
   updatedAt?: string;

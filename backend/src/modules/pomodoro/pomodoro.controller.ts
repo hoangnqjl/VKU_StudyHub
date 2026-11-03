@@ -56,6 +56,17 @@ export class PomodoroController {
     }
   };
 
+  public closeRoom = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+      await pomodoroService.closeRoom(id, userId);
+      return sendSuccess(res, { roomId: id }, 'Đã đóng và kết thúc phòng học Pomodoro');
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updateTimer = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

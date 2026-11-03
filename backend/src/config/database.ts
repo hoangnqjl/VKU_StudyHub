@@ -34,6 +34,38 @@ export const initDatabaseTables = async (): Promise<boolean> => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    
+    // Table cohorts (Khóa học 2019 - 2028)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS cohorts (
+        id VARCHAR(20) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        start_year INT NOT NULL,
+        end_year INT NOT NULL,
+        description VARCHAR(200),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    const [existingCohorts]: any = await connection.query('SELECT COUNT(*) as count FROM cohorts');
+    if (existingCohorts[0]?.count === 0) {
+      await connection.query(`
+        INSERT INTO cohorts (id, name, start_year, end_year, description) VALUES
+        ('K19', 'Khóa 2019 (K19)', 2019, 2023, 'Niên khóa 2019 - 2023'),
+        ('K20', 'Khóa 2020 (K20)', 2020, 2024, 'Niên khóa 2020 - 2024'),
+        ('K21', 'Khóa 2021 (K21)', 2021, 2025, 'Niên khóa 2021 - 2025'),
+        ('K22', 'Khóa 2022 (K22)', 2022, 2026, 'Niên khóa 2022 - 2026'),
+        ('K23', 'Khóa 2023 (K23)', 2023, 2027, 'Niên khóa 2023 - 2027'),
+        ('K24', 'Khóa 2024 (K24)', 2024, 2028, 'Niên khóa 2024 - 2028'),
+        ('K25', 'Khóa 2025 (K25)', 2025, 2029, 'Niên khóa 2025 - 2029'),
+        ('K26', 'Khóa 2026 (K26)', 2026, 2030, 'Niên khóa 2026 - 2030'),
+        ('K27', 'Khóa 2027 (K27)', 2027, 2031, 'Niên khóa 2027 - 2031'),
+        ('K28', 'Khóa 2028 (K28)', 2028, 2032, 'Niên khóa 2028 - 2032')
+        ON DUPLICATE KEY UPDATE name=VALUES(name);
+      `);
+      console.log('🌱 [Database] Đã khởi tạo dữ liệu khóa học mẫu 2019 - 2028 cho bảng cohorts');
+    }
+  
     // 2. Table courses
     await connection.query(`
       CREATE TABLE IF NOT EXISTS courses (
@@ -102,6 +134,18 @@ export const initDatabaseTables = async (): Promise<boolean> => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    
+    // 7. Table user_google_links (Module 1: Real VKU Google Account Binding)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS user_google_links (
+        user_id VARCHAR(36) PRIMARY KEY,
+        google_email VARCHAR(100) NOT NULL,
+        google_id VARCHAR(100),
+        linked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+  
     // Seed sample courses if table is empty
     const [existingCourses]: any = await connection.query('SELECT COUNT(*) as count FROM courses');
     if (existingCourses[0]?.count === 0) {
@@ -115,6 +159,18 @@ export const initDatabaseTables = async (): Promise<boolean> => {
         ('MATH001', 'Xác suất thống kê', 'Bộ môn Khoa học Cơ bản', 3);
       `);
       console.log('🌱 [Database] Đã khởi tạo dữ liệu môn học mẫu cho bảng courses');
+    }
+
+    // Seed sample users if empty
+    const [existingUsers]: any = await connection.query('SELECT COUNT(*) as count FROM users');
+    if (existingUsers[0]?.count === 0) {
+      const crypto = await import('crypto');
+      const hash = crypto.createHash('sha256').update('123456').digest('hex');
+      await connection.query(
+        `INSERT INTO users (id, student_id, email, full_name, password_hash, avatar_url, faculty, major, study_goals) VALUES ('usr_01', '23IT.B063', 'hoangnq.23it@vku.udn.vn', 'Nguyễn Quang Hoàng', ?, 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', 'Khoa Công nghệ Thông tin', 'Kỹ thuật Phần mềm', 'Ôn thi cuối kỳ đạt điểm A và hoàn thành đồ án App VKU StudyHub'), ('usr_02', '23CE.B025', 'trongpnp.23ce@vku.udn.vn', 'Phạm Nguyễn Phú Trọng', ?, 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61', 'Khoa Kỹ thuật Máy tính', 'Hệ thống Nhúng & IoT', 'Luyện đề thi trắc nghiệm và ôn giải thuật')`,
+        [hash, hash]
+      );
+      console.log('🌱 [Database] Đã đồng bộ tài khoản sinh viên mẫu (23IT.B063 & 23CE.B025)');
     }
 
     console.log('✅ [Database] Đã khởi tạo & đồng bộ cấu trúc bảng Module 1 & Module 4 (Pomodoro) thành công');

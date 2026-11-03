@@ -19,6 +19,8 @@ router.get('/', optionalAuth, validate(documentQuerySchema), documentController.
 router.post('/', optionalAuth, validate(createDocumentSchema), documentController.createDocument);
 
 // 2. Kho "Tài liệu của tôi" (US-06, US-19)
+router.get('/storage', optionalAuth, documentController.getStorageUsage);
+router.post('/upload', optionalAuth, documentController.uploadDocumentFile);
 router.get('/saved', optionalAuth, documentController.getSavedDocuments);
 router.delete('/saved/:id', optionalAuth, documentController.removeSavedDocument);
 

@@ -2,7 +2,8 @@ export type DocumentCategory = 'DE_THI' | 'TOM_TAT' | 'BAI_GIANG' | 'DO_AN';
 export type FileType = 'PDF' | 'DOCX' | 'ZIP' | 'IMAGE';
 
 export const DOCUMENT_CONFIG = {
-  MAX_FILE_SIZE_BYTES: 50 * 1024 * 1024, // 50MB (R-05 Cloud free-tier limit)
+  MAX_FILE_SIZE_BYTES: 50 * 1024 * 1024,
+  USER_STORAGE_LIMIT_BYTES: 1024 * 1024 * 1024, // 1 GB / sinh vien // 50MB (R-05 Cloud free-tier limit)
   DEFAULT_QR_TTL_MINUTES: 240, // 4 hours TTL
   QR_DEEP_LINK_PREFIX: 'vkuapp://document-qr?token=',
   ALLOWED_EXTENSIONS: ['pdf', 'docx', 'zip', 'png', 'jpg'],
@@ -21,7 +22,9 @@ export interface StudyDocument {
   courseCode: string;
   courseName: string;
   category: DocumentCategory;
-  fileUrl: string;
+  fileUrl?: string;
+  fileData?: string;
+  fileName?: string;
   fileType: FileType;
   fileSizeBytes: number;
   authorId: string;
@@ -60,7 +63,9 @@ export interface CreateDocumentDto {
   courseCode: string;
   courseName?: string;
   category?: DocumentCategory;
-  fileUrl: string;
+  fileUrl?: string;
+  fileData?: string;
+  fileName?: string;
   fileType?: FileType;
   fileSizeBytes?: number;
 }

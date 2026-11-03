@@ -14,59 +14,7 @@ import { AppError } from '../../middlewares/error.middleware';
 
 class RadarService {
   // In-memory active check-ins with initial mock data
-  private checkIns: StudyBuddyCheckIn[] = [
-    {
-      id: 'chk_01',
-      userId: 'usr_02',
-      studentName: 'Phạm Nguyễn Phú Trọng',
-      studentId: '23CE.B025',
-      avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61',
-      locationId: 'loc_lib_f2',
-      locationName: 'Thư viện - Tầng 2',
-      courseCode: 'IT001',
-      courseName: 'Quản lý dự án phần mềm',
-      studyNote: 'Bàn số 4 gần cửa sổ, ôn WBS & Project Charter',
-      clientIp: '127.0.0.1',
-      isActive: true,
-      checkedInAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      expiresAt: new Date(Date.now() + (RADAR_CONFIG.CHECKIN_TTL_MS - 30 * 60 * 1000)).toISOString(),
-      renewCount: 0
-    },
-    {
-      id: 'chk_02',
-      userId: 'usr_03',
-      studentName: 'Nguyễn Thị Diễm Quỳnh',
-      studentId: '23IT.B196',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-      locationId: 'loc_lib_f2',
-      locationName: 'Thư viện - Tầng 2',
-      courseCode: 'IT001',
-      courseName: 'Quản lý dự án phần mềm',
-      studyNote: 'Đang làm Wireframe Figma, cần bạn thảo luận cùng',
-      clientIp: '127.0.0.1',
-      isActive: true,
-      checkedInAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-      expiresAt: new Date(Date.now() + (RADAR_CONFIG.CHECKIN_TTL_MS - 45 * 60 * 1000)).toISOString(),
-      renewCount: 0
-    },
-    {
-      id: 'chk_03',
-      userId: 'usr_04',
-      studentName: 'Tạ Kim Hương',
-      studentId: '23IT.B088',
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
-      locationId: 'loc_v_self_study',
-      locationName: 'Khu tự học Tòa V',
-      courseCode: 'IT002',
-      courseName: 'Lập trình di động đa nền tảng',
-      studyNote: 'Ôn bài thi trắc nghiệm React Native',
-      clientIp: '127.0.0.1',
-      isActive: true,
-      checkedInAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-      expiresAt: new Date(Date.now() + (RADAR_CONFIG.CHECKIN_TTL_MS - 15 * 60 * 1000)).toISOString(),
-      renewCount: 0
-    }
-  ];
+  private checkIns: StudyBuddyCheckIn[] = [];
 
   // In-memory table join requests
   private joinRequests: JoinTableRequest[] = [];

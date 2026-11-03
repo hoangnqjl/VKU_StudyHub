@@ -8,7 +8,9 @@ export const createDocumentSchema = z.object({
     courseCode: z.string().min(1, 'Mã môn học không được để trống').max(20),
     courseName: z.string().optional(),
     category: z.enum(['DE_THI', 'TOM_TAT', 'BAI_GIANG', 'DO_AN']).optional().default('TOM_TAT'),
-    fileUrl: z.string().url('Đường dẫn file (URL) không hợp lệ'),
+    fileUrl: z.string().optional(),
+    fileData: z.string().optional(),
+    fileName: z.string().optional(),
     fileType: z.enum(['PDF', 'DOCX', 'ZIP', 'IMAGE']).optional().default('PDF'),
     fileSizeBytes: z
       .number()

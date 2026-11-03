@@ -4,10 +4,11 @@ export const loginSchema = z.object({
   body: z
     .object({
       studentId: z.string().optional(),
-      email: z.string().email('Email sinh viên VKU không hợp lệ').optional(),
+      email: z.string().optional(),
+      studentIdOrEmail: z.string().optional(),
       password: z.string().min(1, 'Mật khẩu không được để trống').optional()
     })
-    .refine((data) => data.studentId || data.email, {
+    .refine((data) => data.studentId || data.email || data.studentIdOrEmail, {
       message: 'Vui lòng cung cấp MSSV hoặc Email để đăng nhập'
     })
 });
@@ -21,6 +22,7 @@ export const signupSchema = z.object({
     faculty: z.string().optional(),
     major: z.string().optional(),
     enrolledCourses: z.array(z.string()).optional(),
+    academicYear: z.string().optional(),
     studyGoals: z.string().optional()
   })
 });
@@ -35,5 +37,20 @@ export const updateProfileSchema = z.object({
     major: z.string().optional(),
     enrolledCourses: z.array(z.string()).optional(),
     studyGoals: z.string().optional()
+  })
+});
+
+export const googleLoginSchema = z.object({
+  body: z.object({
+    email: z
+      .string()
+      .email('Email Google không hợp lệ')
+      .refine((val) => val.trim().toLowerCase().endsWith('@vku.udn.vn'), {
+        message: 'Chỉ chấp nhận tài khoản Google sinh viên/cán bộ VKU có đuôi @vku.udn.vn'
+      }),
+    idToken: z.string().optional(),
+    fullName: z.string().optional(),
+    avatarUrl: z.string().optional(),
+    googleId: z.string().optional()
   })
 });
