@@ -1,16 +1,15 @@
 import { safeBack } from '../utils/navigation';
 import { useState, useEffect } from 'react';
 import { authService, documentService } from '../services';
-import { pickAndUploadAvatar } from '../utils/avatarPicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAlert } from '../components/AlertContext';
 import { Feather } from '@expo/vector-icons';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import DocumentViewerModal, { DocumentViewerItem } from '../components/DocumentViewerModal';
 import DropdownMenu, { DropdownMenuItem } from '../components/DropdownMenu';
-import { TemoStaggeredView, TemoPressable, TemoScreenTransition } from '../components/temoEffects';
+import { TemoStaggeredView, TemoPressable } from '../components/temoEffects';
 import { useDesign } from '../components/design-scale';
 import {
   useFonts,
@@ -135,31 +134,6 @@ export default function ProfileScreen() {
   const [profileData, setProfileData] = useState<any>(null);
   const [myDocsCount, setMyDocsCount] = useState<number>(0);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
-  const [avatarError, setAvatarError] = useState(false);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-
-  const handlePickAndUploadAvatar = async () => {
-    try {
-      setIsUploadingAvatar(true);
-      const res = await pickAndUploadAvatar();
-      if (res.success && res.avatarUrl) {
-        setCustomAvatar(res.avatarUrl);
-        setProfileData((prev: any) => ({ ...prev, avatarUrl: res.avatarUrl }));
-        showSuccess(
-          'Đã cập nhật Avatar',
-          res.isCloudinary
-            ? 'Ảnh đại diện đã được lưu trữ vĩnh viễn trên Cloudinary!'
-            : 'Đã cập nhật ảnh đại diện thành công!'
-        );
-      } else if (res.error) {
-        showError('Không thể tải ảnh', res.error);
-      }
-    } catch (err: any) {
-      showError('Lỗi cập nhật ảnh', err.message || 'Không thể cập nhật ảnh đại diện.');
-    } finally {
-      setIsUploadingAvatar(false);
-    }
-  };
   const [myDocs, setMyDocs] = useState<any[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<DocumentViewerItem | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -195,16 +169,10 @@ export default function ProfileScreen() {
           setSelectedCourses(user.courses);
         }
       }
-    }).catch(() => {});
+    }).catch(() => { });
     AsyncStorage.getItem('@vku_user_avatar').then((a) => {
-      if (a) {
-        if (a.includes('avatar_usr_01_default.png')) {
-          AsyncStorage.removeItem('@vku_user_avatar');
-        } else {
-          setCustomAvatar(a);
-        }
-      }
-    }).catch(() => {});
+      if (a) setCustomAvatar(a);
+    }).catch(() => { });
     Promise.all([
       documentService.getSavedDocuments().catch(() => []),
       documentService.getDocuments().catch(() => []),
@@ -223,7 +191,7 @@ export default function ProfileScreen() {
       })).values());
       setMyDocs(uniqueDocs);
       setMyDocsCount(uniqueDocs.length);
-    }).catch(() => {});
+    }).catch(() => { });
     AsyncStorage.getItem('@vku_custom_courses').then((raw) => {
       if (raw) {
         try {
@@ -231,7 +199,7 @@ export default function ProfileScreen() {
           if (Array.isArray(parsed) && parsed.length > 0) {
             setCourseList((prev) => Array.from(new Set([...prev, ...parsed])));
           }
-        } catch {}
+        } catch { }
       }
     });
     AsyncStorage.getItem('@vku_custom_goals').then((raw) => {
@@ -241,7 +209,7 @@ export default function ProfileScreen() {
           if (Array.isArray(parsed) && parsed.length > 0) {
             setGoalsList([...DEFAULT_GOALS, ...parsed]);
           }
-        } catch {}
+        } catch { }
       }
     });
     AsyncStorage.getItem('@vku_active_goal').then((val) => {
@@ -251,7 +219,7 @@ export default function ProfileScreen() {
 
   if (!fontsLoaded) return null;
 
-    const handleAddCourse = async () => {
+  const handleAddCourse = async () => {
     if (!newCourseName.trim()) {
       showError('Thiếu thông tin', 'Vui lòng nhập tên môn học.');
       return;
@@ -261,7 +229,7 @@ export default function ProfileScreen() {
       if (!selectedCourses.includes(trimmed)) {
         const nextSelected = [...selectedCourses, trimmed];
         setSelectedCourses(nextSelected);
-        await authService.updateProfile({ enrolledCourses: nextSelected }).catch(() => {});
+        await authService.updateProfile({ enrolledCourses: nextSelected }).catch(() => { });
       }
       showSuccess('Đã kích hoạt môn học', `Môn "${trimmed}" đã được thêm vào danh sách môn đang học!`);
       setShowAddCourseModal(false);
@@ -273,8 +241,8 @@ export default function ProfileScreen() {
     setCourseList(nextCourses);
     setSelectedCourses(nextSelected);
 
-    await AsyncStorage.setItem('@vku_custom_courses', JSON.stringify(nextCourses)).catch(() => {});
-    await authService.updateProfile({ enrolledCourses: nextSelected }).catch(() => {});
+    await AsyncStorage.setItem('@vku_custom_courses', JSON.stringify(nextCourses)).catch(() => { });
+    await authService.updateProfile({ enrolledCourses: nextSelected }).catch(() => { });
 
     showSuccess('Thêm môn thành công', `Đã thêm môn "${trimmed}" vào danh sách học tập của bạn!`);
     setShowAddCourseModal(false);
@@ -286,9 +254,9 @@ export default function ProfileScreen() {
       ? selectedCourses.filter((c) => c !== name)
       : [...selectedCourses, name];
     setSelectedCourses(next);
-    await authService.updateProfile({ enrolledCourses: next }).catch(() => {});
+    await authService.updateProfile({ enrolledCourses: next }).catch(() => { });
   };
-const goBack = () => {
+  const goBack = () => {
     safeBack('/home');
   };
 
@@ -310,9 +278,9 @@ const goBack = () => {
     setGoal(newId);
 
     const customOnly = updated.filter((g) => g.isCustom);
-    await AsyncStorage.setItem('@vku_custom_goals', JSON.stringify(customOnly)).catch(() => {});
-    await AsyncStorage.setItem('@vku_active_goal', newId).catch(() => {});
-    await authService.updateProfile({ studyGoals: newGoalItem.title }).catch(() => {});
+    await AsyncStorage.setItem('@vku_custom_goals', JSON.stringify(customOnly)).catch(() => { });
+    await AsyncStorage.setItem('@vku_active_goal', newId).catch(() => { });
+    await authService.updateProfile({ studyGoals: newGoalItem.title }).catch(() => { });
 
     showSuccess('Đã tạo mục tiêu', `Mục tiêu "${newGoalItem.title}" đã được lưu và kích hoạt trên Study Radar!`);
     setShowAddGoalModal(false);
@@ -323,8 +291,8 @@ const goBack = () => {
 
   const handleSelectGoal = async (g: any) => {
     setGoal(g.id);
-    await AsyncStorage.setItem('@vku_active_goal', g.id).catch(() => {});
-    await authService.updateProfile({ studyGoals: g.title }).catch(() => {});
+    await AsyncStorage.setItem('@vku_active_goal', g.id).catch(() => { });
+    await authService.updateProfile({ studyGoals: g.title }).catch(() => { });
     showSuccess('Đã kích hoạt mục tiêu', `Mục tiêu "${g.title}" đã được kích hoạt trên Study Radar.`);
   };
 
@@ -332,16 +300,16 @@ const goBack = () => {
     const updated = goalsList.filter((g) => g.id !== id);
     setGoalsList(updated);
     const customOnly = updated.filter((g) => g.isCustom);
-    await AsyncStorage.setItem('@vku_custom_goals', JSON.stringify(customOnly)).catch(() => {});
+    await AsyncStorage.setItem('@vku_custom_goals', JSON.stringify(customOnly)).catch(() => { });
     if (goal === id) {
       setGoal('exam');
-      await AsyncStorage.setItem('@vku_active_goal', 'exam').catch(() => {});
-      await authService.updateProfile({ studyGoals: DEFAULT_GOALS[0].title }).catch(() => {});
+      await AsyncStorage.setItem('@vku_active_goal', 'exam').catch(() => { });
+      await authService.updateProfile({ studyGoals: DEFAULT_GOALS[0].title }).catch(() => { });
     }
     showSuccess('Đã xóa mục tiêu', 'Mục tiêu học tập tùy chỉnh đã được gỡ bỏ.');
   };
 
-return (
+  return (
     <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
       <ScrollView
         contentContainerStyle={s.scroll}
@@ -366,7 +334,7 @@ return (
         {/* ===== Thẻ thông tin ===== */}
         <View style={[s.card, s.profileCard]}>
           <View style={s.avatarBox}>
-            <Image source={(!avatarError && (profileData?.avatarUrl || customAvatar) && !(profileData?.avatarUrl || customAvatar).includes('avatar_usr_01_default.png')) ? { uri: profileData?.avatarUrl || customAvatar } : IMG.avatar} onError={() => setAvatarError(true)} style={[s.avatar, { borderRadius: 33 }]} />
+            <Image source={(profileData?.avatarUrl || customAvatar) ? { uri: profileData?.avatarUrl || customAvatar } : IMG.avatar} style={[s.avatar, { borderRadius: 33 }]} />
           </View>
           <View style={s.profileText}>
             <Text style={s.name}>{profileData?.fullName || 'Nguyễn Quang Hoàng'}</Text>
@@ -1156,38 +1124,7 @@ const raw = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  avatarBox: {
-    width: 60,
-    height: 60,
-    position: 'relative',
-    ...Platform.select({ web: { cursor: 'pointer' } }),
-  },
-  cameraBadge: {
-    position: 'absolute',
-    right: -4,
-    bottom: -4,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#374F8A',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-    zIndex: 5,
-  },
-  avatarLoadingOverlay: {
-    position: 'absolute',
-    left: -2,
-    top: -2,
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 6,
-  },
+  avatarBox: { width: 60, height: 60 },
   avatar: { position: 'absolute', left: -2, top: -2, width: 66, height: 66 },
   profileText: { flex: 1, marginLeft: 16 },
   name: {
