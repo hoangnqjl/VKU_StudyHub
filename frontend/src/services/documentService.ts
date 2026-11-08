@@ -78,11 +78,17 @@ export const documentService = {
   },
 
   async generateQRToken(documentId: string, isPermanent = true) {
-    const res = await apiClient.post<{ qrToken: string; qrUrl: string; expiresAt: string }>(
+    const res = await apiClient.post<any>(
       `/documents/${documentId}/qr`,
       { isPermanent }
     );
-    return res.data;
+    const data = res.data;
+    const qrUrl = data.qrUrl || data.deepLinkUrl || `vkuapp://document-qr?token=${data.qrToken}&id=${documentId}`;
+    return {
+      ...data,
+      qrUrl,
+      deepLinkUrl: qrUrl,
+    };
   },
 
   async getDocumentByQR(qrToken: string) {

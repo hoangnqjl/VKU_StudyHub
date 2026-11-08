@@ -3,7 +3,20 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  MoreHorizontal,
+  Pencil,
+  Clock,
+  Minus,
+  Plus,
+  BookOpen,
+  Check,
+  Headphones,
+  ArrowRight,
+} from '../components/DynamicLucideIcon';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -82,7 +95,7 @@ export default function CreateRoomScreen() {
             onPress={() => safeBack('/focus')}
             style={s.roundButton}
           >
-            <Feather name="chevron-left" size={z(23)} color="#263653" />
+            <ChevronLeft size={z(23)} color="#263653" strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle}>Pomodoro room</Text>
           <Pressable
@@ -91,14 +104,14 @@ export default function CreateRoomScreen() {
             onPress={() => setNotice('Tính năng ghi chú chuyên sâu và âm thanh tùy chỉnh đang được bật.')}
             style={s.roundButton}
           >
-            <Feather name="more-horizontal" size={z(25)} color={COLORS.title} />
+            <MoreHorizontal size={z(25)} color={COLORS.title} strokeWidth={2} />
           </Pressable>
         </View>
 
         <View style={s.nameCard}>
           <Text style={s.fieldLabel}>Tên phòng</Text>
           <View style={s.textInputWrap}>
-            <Feather name="edit-3" size={z(17)} color={COLORS.body} />
+            <Pencil size={z(17)} color={COLORS.body} strokeWidth={2} />
             <TextInput
               accessibilityLabel="Tên phòng"
               maxLength={60}
@@ -114,7 +127,7 @@ export default function CreateRoomScreen() {
 
         <View style={s.cycleCard}>
           <View style={s.sectionHeading}>
-            <Feather name="clock" size={z(20)} color={COLORS.navy} />
+            <Clock size={z(20)} color={COLORS.navy} strokeWidth={2} />
             <Text style={s.sectionTitle}>Chu kỳ Pomodoro</Text>
           </View>
           <View style={s.optionRow}>
@@ -144,7 +157,7 @@ export default function CreateRoomScreen() {
                 onPress={() => setSessions((value) => Math.max(1, value - 1))}
                 style={[s.stepperButton, sessions <= 1 && s.stepperDisabled]}
               >
-                <Feather name="minus" size={z(18)} color={COLORS.title} />
+                <Minus size={z(18)} color={COLORS.title} strokeWidth={2.5} />
               </Pressable>
               <Text style={s.sessionsValue}>{sessions} phiên</Text>
               <Pressable
@@ -155,7 +168,7 @@ export default function CreateRoomScreen() {
                 onPress={() => setSessions((value) => Math.min(12, value + 1))}
                 style={[s.stepperButton, sessions >= 12 && s.stepperDisabled]}
               >
-                <Feather name="plus" size={z(18)} color={COLORS.title} />
+                <Plus size={z(18)} color={COLORS.title} strokeWidth={2.5} />
               </Pressable>
             </View>
           </View>
@@ -170,13 +183,13 @@ export default function CreateRoomScreen() {
             onPress={() => setSubjectPickerOpen((open) => !open)}
             style={s.subjectSelect}
           >
-            <Feather name="book-open" size={z(19)} color={COLORS.navy} />
+            <BookOpen size={z(19)} color={COLORS.navy} strokeWidth={2} />
             <Text style={s.subjectText} numberOfLines={1}>{subject}</Text>
-            <Feather
-              name={subjectPickerOpen ? 'chevron-up' : 'chevron-down'}
-              size={z(18)}
-              color={COLORS.body}
-            />
+            {subjectPickerOpen ? (
+              <ChevronUp size={z(18)} color={COLORS.body} strokeWidth={2} />
+            ) : (
+              <ChevronDown size={z(18)} color={COLORS.body} strokeWidth={2} />
+            )}
           </Pressable>
           {subjectPickerOpen && (
             <View style={s.subjectOptions}>
@@ -194,7 +207,7 @@ export default function CreateRoomScreen() {
                   <Text style={[s.subjectOptionText, subject === option && s.subjectOptionSelected]}>
                     {option}
                   </Text>
-                  {subject === option && <Feather name="check" size={z(16)} color={COLORS.navy} />}
+                  {subject === option && <Check size={z(16)} color={COLORS.navy} strokeWidth={2.5} />}
                 </Pressable>
               ))}
             </View>
@@ -219,7 +232,7 @@ export default function CreateRoomScreen() {
         </View>
 
         <View style={s.audioCard}>
-          <Feather name="headphones" size={z(20)} color={COLORS.title} />
+          <Headphones size={z(20)} color={COLORS.title} strokeWidth={2} />
           <Text style={s.audioLabel}>Âm thanh nền (Mưa thư viện)</Text>
           <Pressable
             accessibilityRole="switch"
@@ -265,7 +278,7 @@ export default function CreateRoomScreen() {
           style={s.startButton}
         >
           <Text style={s.startButtonText}>Bắt đầu mở phòng</Text>
-          <Feather name="arrow-right" size={z(20)} color={COLORS.white} />
+          <ArrowRight size={z(20)} color={COLORS.white} strokeWidth={2.2} />
         </Pressable>
       </ScrollView>
     </SafeAreaView>

@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { pomodoroService } from '../services';
+import { pomodoroService, authService } from '../services';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  Bell,
+  Users,
+  Plus,
+  Languages,
+  Terminal,
+  Palette,
+  Sigma,
+  ArrowRight,
+} from 'lucide-react-native';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -14,12 +24,14 @@ import {
 } from '@expo-google-fonts/inter';
 
 import StudyHubTabBar from '../components/study-hub-tab-bar';
+import { useNotificationBadge } from '../utils/useNotificationBadge';
 import { useDesign } from '../components/design-scale';
 
 const IMG = {
   logo: require('../../assets/images/vku-logo.png'),
   bell: require('../../assets/images/home/bell.png'),
   uiuxRoomIcon: require('../../assets/images/home/uiux-room-icon.png'),
+  avatar: require('../../assets/images/avatar.png'),
 };
 
 const C = {
@@ -115,6 +127,7 @@ const ROOMS = [
 
 export default function FocusScreen() {
   const { s, z } = useDesign(raw);
+  const unreadCount = useNotificationBadge();
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -124,6 +137,23 @@ export default function FocusScreen() {
     Inter_800ExtraBold,
   });
   const [realtimeRooms, setRealtimeRooms] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState(false);
+
+  useEffect(() => {
+    authService.getCurrentUser().then(u => {
+      if (u) {
+        setUserProfile(u);
+        if (u.avatarUrl) setUserAvatar(u.avatarUrl);
+      }
+    }).catch(() => {});
+    AsyncStorage.getItem('@vku_user_avatar').then(a => {
+      if (a && !a.includes('avatar_usr_01_default.png')) {
+        setUserAvatar(a);
+      }
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -177,8 +207,8 @@ export default function FocusScreen() {
               style={s.bellButton}
               onPress={() => router.push('/table-invitation' as any)}
             >
-              <Image source={IMG.bell} style={{ width: z(19), height: z(21) }} />
-              <View style={s.bellDot} />
+              <Bell size={z(20)} color={C.brand} strokeWidth={2} />
+              {unreadCount > 0 && <View style={s.bellDot} />}
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -186,15 +216,26 @@ export default function FocusScreen() {
               style={s.avatarButton}
               onPress={() => router.push('/profile' as any)}
             >
-              <Text style={s.avatarText}>AN</Text>
+              {!avatarError && userAvatar ? (
+                <Image
+                  source={{ uri: userAvatar }}
+                  onError={() => setAvatarError(true)}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              ) : (
+                <Image
+                  source={IMG.avatar}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              )}
             </Pressable>
           </View>
         </View>
 
         <View style={s.createRoomCard}>
           <View style={s.groupIcon}>
-            <Feather name="users" size={z(22)} color={C.primary} />
-            <View style={s.groupPlus}><Feather name="plus" size={z(10)} color={C.primary} /></View>
+            <Users size={z(22)} color={C.primary} strokeWidth={2} />
+            <View style={s.groupPlus}><Plus size={z(10)} color={C.primary} strokeWidth={2.5} /></View>
           </View>
           <View style={s.createCopy}>
             <Text style={s.createTitle}>Phòng học nhóm</Text>
@@ -205,7 +246,7 @@ export default function FocusScreen() {
             onPress={() => router.push('/create-room' as any)}
             style={s.createButton}
           >
-            <Feather name="plus" size={z(15)} color={C.white} />
+            <Plus size={z(15)} color={C.white} strokeWidth={2.5} />
             <Text style={s.createButtonText}>Tạo phòng</Text>
           </Pressable>
         </View>
@@ -213,7 +254,15 @@ export default function FocusScreen() {
         <Text style={s.sectionTitle}>Phòng học trực tuyến đang mở</Text>
 
         {(realtimeRooms.length > 0 ? realtimeRooms.map((r: any, idx: number) => {
-          const participants = (r.participants || []).slice(0, 3).map((p: any, pIdx: number) => ({
+          const hostInitials = (r.hostName || 'VKU')
+            .split(' ')
+            .slice(-1)[0]
+            .substring(0, 2)
+            .toUpperCase();
+          const rawParticipants = (r.participants && r.participants.length > 0)
+            ? r.participants
+            : [{ fullName: r.hostName || 'Chủ phòng', isHost: true }];
+          const participants = rawParticipants.slice(0, 3).map((p: any, pIdx: number) => ({
             initials: (p.fullName || 'VKU').split(' ').slice(-1)[0].substring(0, 2).toUpperCase(),
             color: pIdx === 0 ? '#DDE8FF' : pIdx === 1 ? '#FFF0CC' : '#D8F8EB',
             textColor: pIdx === 0 ? '#193782' : pIdx === 1 ? '#AD5700' : '#08785B',
@@ -226,14 +275,14 @@ export default function FocusScreen() {
           return {
             id: r.id,
             title: r.title || r.name,
-            icon: (idx % 3 === 0 ? 'terminal' : idx % 3 === 1 ? 'translate' : 'sigma') as any,
-            iconColor: idx % 3 === 0 ? '#142C84' : idx % 3 === 1 ? '#374F8A' : '#142C84',
+            icon: (idx % 4 === 0 ? 'terminal' : idx % 4 === 1 ? 'figma' : idx % 4 === 2 ? 'translate' : 'sigma') as any,
+            iconColor: idx % 4 === 0 ? '#142C84' : idx % 4 === 1 ? '#FF642D' : idx % 4 === 2 ? '#374F8A' : '#142C84',
             seats: `${r.participants?.length || 1}/${r.maxParticipants || 8} chỗ`,
             remaining: remainingText,
             remainingMinutes: remainingMins,
             cycle: `${r.focusDurationMinutes || 25}' Chu kỳ`,
             participants,
-            extra: (r.participants?.length || 0) > 3 ? `+${(r.participants?.length || 0) - 3}` : '',
+            extra: (rawParticipants.length || 0) > 3 ? `+${(rawParticipants.length || 0) - 3}` : '',
             subtitle: r.courseName ? `Môn: ${r.courseName}` : 'Đang tập trung học tập',
             isBreak,
             isPaused,
@@ -245,13 +294,13 @@ export default function FocusScreen() {
               <View style={s.roomMainRow}>
                 <View style={s.roomIconBox}>
                   {room.icon === 'sigma' ? (
-                    <Text style={[s.sigmaIcon, { color: room.iconColor }]}>Σ</Text>
+                    <Sigma size={z(22)} color={room.iconColor} strokeWidth={2.2} />
                   ) : room.icon === 'translate' ? (
-                    <MaterialCommunityIcons name="translate" size={z(21)} color={room.iconColor} />
+                    <Languages size={z(22)} color={room.iconColor} strokeWidth={2} />
                   ) : room.icon === 'figma' ? (
-                    <Image source={IMG.uiuxRoomIcon} style={s.uiuxRoomIcon} resizeMode="contain" />
+                    <Palette size={z(22)} color={room.iconColor} strokeWidth={2} />
                   ) : (
-                    <MaterialCommunityIcons name="console" size={z(23)} color={room.iconColor} />
+                    <Terminal size={z(22)} color={room.iconColor} strokeWidth={2} />
                   )}
                 </View>
 
@@ -309,7 +358,7 @@ export default function FocusScreen() {
                   style={s.joinButton}
                 >
                   <Text style={s.joinButtonText}>Vào phòng</Text>
-                  <Feather name="arrow-right" size={z(15)} color={C.white} />
+                  <ArrowRight size={z(15)} color={C.white} strokeWidth={2.2} />
                 </Pressable>
               </View>
             </View>
@@ -377,9 +426,10 @@ const raw = StyleSheet.create({
     height: 40,
     marginLeft: 10,
     borderRadius: 20,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: C.brand,
+    backgroundColor: '#E2E8F0',
   },
   avatarText: { fontFamily: F.bold, fontSize: 13, lineHeight: 18, color: C.white },
   createRoomCard: {
@@ -477,8 +527,8 @@ const raw = StyleSheet.create({
   remainingText: { marginLeft: 4, fontFamily: F.medium, fontSize: 11.5, lineHeight: 16, color: '#059669' },
   remainingBusy: { color: '#D97706' },
   roomDivider: { height: 1, marginTop: 11, marginBottom: 6, backgroundColor: '#F1F3F6' },
-  roomFooter: { height: 34, flexDirection: 'row', alignItems: 'center' },
-  participantStack: { flexDirection: 'row', alignItems: 'center', minWidth: 91 },
+  roomFooter: { height: 36, flexDirection: 'row', alignItems: 'center' },
+  participantStack: { flexDirection: 'row', alignItems: 'center', width: 70, flexShrink: 0 },
   participantAvatar: {
     width: 26,
     height: 26,
@@ -492,16 +542,17 @@ const raw = StyleSheet.create({
   participantInitials: { fontFamily: F.bold, fontSize: 9.5, lineHeight: 12 },
   extraAvatar: { marginLeft: -8, backgroundColor: '#F1F5F9' },
   extraText: { fontFamily: F.semi, fontSize: 9, lineHeight: 12, color: '#475569' },
-  roomSubtitle: { flex: 1, minWidth: 0, marginHorizontal: 7, fontFamily: F.medium, fontSize: 10.5, lineHeight: 15, color: C.body },
+  roomSubtitle: { flex: 1, minWidth: 0, marginHorizontal: 8, fontFamily: F.medium, fontSize: 11, lineHeight: 16, color: C.body },
   joinButton: {
     height: 34,
-    minWidth: 89,
-    paddingHorizontal: 11,
+    width: 105,
+    paddingHorizontal: 10,
     borderRadius: 19,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: C.primary,
+    flexShrink: 0,
   },
-  joinButtonText: { marginRight: 6, fontFamily: F.semi, fontSize: 11.5, lineHeight: 16, color: C.white },
+  joinButtonText: { marginRight: 5, fontFamily: F.semi, fontSize: 11.5, lineHeight: 16, color: C.white },
 });

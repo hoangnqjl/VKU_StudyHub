@@ -3,7 +3,16 @@ import { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import {
+  Clock,
+  Award,
+  Check,
+  MessageSquare,
+  Home,
+  CheckCircle,
+  Radio,
+  Compass,
+} from '../components/DynamicLucideIcon';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -182,7 +191,7 @@ export default function TableInvitationScreen() {
                   <Text style={s.alertBadgeText}>TÍN HIỆU STUDY RADAR</Text>
                 </View>
                 <View style={s.timeRow}>
-                  <Feather name="clock" size={z(13)} color={C.muted} />
+                  <Clock size={z(13)} color={C.muted} strokeWidth={2} />
                   <Text style={s.timeText}>Vừa xong</Text>
                 </View>
               </View>
@@ -197,7 +206,7 @@ export default function TableInvitationScreen() {
                 <View style={s.avatarWrap}>
                   <Image source={IMG.avatar} style={s.avatar} />
                   <View style={s.avatarBadge}>
-                    <Feather name="award" size={z(10)} color={C.white} />
+                    <Award size={z(10)} color={C.white} strokeWidth={2.5} />
                   </View>
                 </View>
 
@@ -206,7 +215,7 @@ export default function TableInvitationScreen() {
                     <Text style={s.studentName} numberOfLines={1}>{activeInvitation.name}</Text>
                     <View style={s.verifiedBadge}>
                       <View style={s.verifiedIconCircle}>
-                        <Feather name="check" size={z(8)} color={C.white} />
+                        <Check size={z(8)} color={C.white} strokeWidth={3} />
                       </View>
                       <Text style={s.verifiedText}>Xác thực</Text>
                     </View>
@@ -222,7 +231,7 @@ export default function TableInvitationScreen() {
                 <View style={s.courseTopRow}>
                   <Text style={s.courseLabel}>MÔN HỌC CHUNG & MỤC TIÊU</Text>
                   <View style={s.examBadge}>
-                    <Feather name="check" size={z(12)} color="#059669" />
+                    <Check size={z(12)} color="#059669" strokeWidth={3} />
                     <Text style={s.examText}>Trùng lịch thi</Text>
                   </View>
                 </View>
@@ -237,7 +246,7 @@ export default function TableInvitationScreen() {
 
             <View style={s.messageCard}>
               <View style={s.messageHeader}>
-                <Feather name="message-square" size={z(17)} color="#E87900" />
+                <MessageSquare size={z(17)} color="#E87900" strokeWidth={2} />
                 <Text style={s.messageLabel}>LỜI NHẮN TỪ BẠN HỌC:</Text>
               </View>
               <View style={s.quoteRow}>
@@ -251,7 +260,7 @@ export default function TableInvitationScreen() {
             <View style={s.locationCard}>
               <View style={s.locationHeader}>
                 <View style={s.locationIcon}>
-                  <Feather name="home" size={z(16)} color="#52647E" />
+                  <Home size={z(16)} color="#52647E" strokeWidth={2} />
                 </View>
                 <View style={s.locationCopy}>
                   <Text style={s.locationTitle}>{activeInvitation.location}</Text>
@@ -294,7 +303,7 @@ export default function TableInvitationScreen() {
                 onPress={() => handleRespond('ACCEPTED')}
                 style={s.acceptButton}
               >
-                <Feather name="check-circle" size={z(18)} color={C.white} />
+                <CheckCircle size={z(18)} color={C.white} strokeWidth={2} />
                 <Text style={s.acceptText}>Đồng ý ghép bàn</Text>
               </Pressable>
               <Pressable
@@ -309,7 +318,7 @@ export default function TableInvitationScreen() {
         ) : (
           <View style={s.emptyWrap}>
             <View style={s.emptyIconCircle}>
-              <Feather name="radio" size={z(36)} color={C.primary} />
+              <Radio size={z(36)} color={C.primary} strokeWidth={2} />
             </View>
             <Text style={s.emptyTitle}>Chưa có lời mời ghép bàn nào</Text>
             <Text style={s.emptySub}>
@@ -319,7 +328,7 @@ export default function TableInvitationScreen() {
               onPress={() => router.push('/radar' as any)}
               style={s.findBuddyBtn}
             >
-              <Feather name="compass" size={z(18)} color={C.white} />
+              <Compass size={z(18)} color={C.white} strokeWidth={2} />
               <Text style={s.findBuddyText}>Mở Study Radar tìm bạn</Text>
             </Pressable>
             <Pressable

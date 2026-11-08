@@ -29,7 +29,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, { ChevronLeft, Search, X, SlidersHorizontal, Check, ChevronDown, ChevronRight, Home, Download, BookOpen, Bookmark, User } from '../components/DynamicLucideIcon';
 
 import {
 
@@ -530,13 +530,13 @@ export default function SearchResultsScreen() {
 
           >
 
-            <Feather name="chevron-left" size={z(25)} color={COLORS.title} />
+            <ChevronLeft size={z(25)} color={COLORS.title} />
 
           </Pressable>
 
           <View style={s.searchBox}>
 
-            <Feather name="search" size={z(21)} color={COLORS.navy} />
+            <Search size={z(21)} color={COLORS.navy} />
 
             <TextInput
 
@@ -574,7 +574,7 @@ export default function SearchResultsScreen() {
 
               >
 
-                <Feather name="x" size={z(17)} color="#555B67" />
+                <X size={z(17)} color="#555B67" />
 
               </Pressable>
 
@@ -594,7 +594,7 @@ export default function SearchResultsScreen() {
 
           >
 
-            <Feather name="filter" size={z(18)} color={COLORS.navy} />
+            <SlidersHorizontal size={z(18)} color={COLORS.navy} />
 
           </Pressable>
 
@@ -642,7 +642,7 @@ export default function SearchResultsScreen() {
 
                 {selected && (
 
-                  <Feather name="check" size={z(15)} color={COLORS.white} />
+                  <Check size={z(15)} color={COLORS.white} />
 
                 )}
 
@@ -681,7 +681,7 @@ export default function SearchResultsScreen() {
             <Text style={s.sortText}>
               {SEARCH_SORT_OPTIONS.find((o) => o.id === searchSort)?.label || 'Phù hợp'}
             </Text>
-            <Feather name="chevron-down" size={z(16)} color={COLORS.title} />
+            <ChevronDown size={z(16)} color={COLORS.title} />
           </Pressable>
 
         </View>
@@ -731,7 +731,7 @@ export default function SearchResultsScreen() {
 
           <View style={s.emptyState}>
 
-            <Feather name="search" size={z(27)} color="#9AAAC1" />
+            <Search size={z(27)} color="#9AAAC1" />
 
             <Text style={s.emptyTitle}>Chưa tìm thấy kết quả</Text>
 
@@ -859,7 +859,7 @@ function ResultCard({
 
         {item.source === 'library' ? (
 
-          <Feather name="home" size={z(17)} color={COLORS.navy} />
+          <Home size={z(17)} color={COLORS.navy} />
 
         ) : item.source === 'person' ? (
 
@@ -913,17 +913,7 @@ function ResultCard({
 
         >
 
-          <Feather
-
-            name="bookmark"
-
-            size={z(17)}
-
-            color={saved ? COLORS.white : COLORS.body}
-
-            fill={saved ? COLORS.white : 'transparent'}
-
-          />
+          <Bookmark size={z(17)} color={saved ? COLORS.white : COLORS.body} fill={saved ? COLORS.white : "none"} />
 
           <Text style={[s.saveButtonText, saved && s.saveButtonTextSelected]}>
 
@@ -943,7 +933,7 @@ function ResultCard({
 
         >
 
-          <Feather name="download" size={z(17)} color={COLORS.white} />
+          <Download size={z(17)} color={COLORS.white} />
 
           <Text style={s.downloadButtonText}>Tải về</Text>
 
@@ -999,7 +989,7 @@ function PersonSubjectCard({
 
           ) : (
 
-            <Feather name="book-open" size={z(19)} color={COLORS.navy} />
+            <BookOpen size={z(19)} color={COLORS.navy} />
 
           )}
 
@@ -1055,19 +1045,11 @@ function PersonSubjectCard({
 
       >
 
-        <Feather
-
-          name={isFriend ? 'user' : 'book'}
-
-          size={z(15)}
-
-          color={COLORS.navy}
-
-        />
+        {isFriend ? <User size={z(15)} color={COLORS.navy} /> : <BookOpen size={z(15)} color={COLORS.navy} />}
 
         <Text style={s.socialActionText}>{isFriend ? 'Xem hồ sơ' : 'Xem học phần'}</Text>
 
-        <Feather name="chevron-right" size={z(16)} color={COLORS.navy} />
+        <ChevronRight size={z(16)} color={COLORS.navy} />
 
       </Pressable>
 
@@ -1173,6 +1155,7 @@ const raw = StyleSheet.create({
 
     color: COLORS.title,
 
+      ...Platform.select({ web: { outlineStyle: 'none' as any } }),
   },
 
   clearButton: {

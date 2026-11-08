@@ -20,5 +20,10 @@ export const ENV = {
     API_KEY: process.env.CLOUDINARY_API_KEY || process.env.CLOUDIARY_API_KEY || '',
     API_SECRET: process.env.CLOUDINARY_API_SECRET || process.env.CLOUDIARY_API_SECRET || process.env.CLOUDIARY_SECRET || '',
     URL: process.env.CLOUDINARY_URL || ''
+  },
+  GOOGLE: {
+    CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '404919884065-kgl77t0ilvu9034lie0grgqhqs17hmlq.apps.googleusercontent.com',
+    CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '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',
+    ANDROID_CLIENT_ID: process.env.GOOGLE_ANDROID_CLIENT_ID || '404919884065-680jmn2q6vel0fj9i18hhpfrt0f5tdus.apps.googleusercontent.com'
   }
 };

@@ -41,6 +41,7 @@ export interface DocumentQrToken {
   documentId: string;
   qrToken: string;
   deepLinkUrl: string;
+  qrUrl?: string;
   expiresAt: string | null;
   isRevoked: boolean;
   claimCount: number;

@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { Image, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+  MoreHorizontal,
+  Share2,
+  Clock,
+  Headphones,
+  ArrowRight,
+} from '../components/DynamicLucideIcon';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -67,6 +74,15 @@ export default function PomodoroRoomScreen() {
   const roomTitle = roomData?.title || (typeof titleParam === 'string' ? titleParam : room.title);
   const roomCode = roomData?.id ? `VKU-${roomData.id.slice(-3).toUpperCase()}` : room.code;
   const [roomMenuOpen, setRoomMenuOpen] = useState(false);
+  const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
+  useEffect(() => {
+    authService.getCurrentUser().then(u => {
+      if (u?.avatarUrl) setCurrentUserAvatar(u.avatarUrl);
+    }).catch(() => {});
+    AsyncStorage.getItem('@vku_user_avatar').then(a => {
+      if (a && !a.includes('avatar_usr_01_default.png')) setCurrentUserAvatar(a);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (roomId) {
@@ -114,16 +130,20 @@ export default function PomodoroRoomScreen() {
     }
   };
 
+  const hostMember = roomData?.participants?.find(p => p.isHost);
+  const hostAvatarUrl = hostMember?.avatarUrl || (hostMember?.userId === 'usr_01' ? currentUserAvatar : undefined);
+
   const dynamicMembers = (roomData?.participants && roomData.participants.length > 0)
     ? roomData.participants.map((p, idx) => ({
         name: p.fullName,
         cohort: 'VKU',
+        avatarUrl: p.avatarUrl || (p.userId === 'usr_01' ? currentUserAvatar : undefined),
         avatar: Object.values(AVATARS)[idx % Object.values(AVATARS).length],
         status: 'Đang học',
         host: p.isHost,
         resting: false,
       }))
-    : [{ name: "Nguyễn Quang Hoàng", cohort: "K23 CNTT", avatar: AVATARS.host, status: "Đang học", host: true, resting: false }];
+    : [{ name: "Nguyễn Quang Hoàng", cohort: "K23 CNTT", avatarUrl: currentUserAvatar, avatar: AVATARS.host, status: "Đang học", host: true, resting: false }];
   const visibleMembers = showAllMembers ? dynamicMembers : dynamicMembers.slice(0, 4);
 
   return (
@@ -139,7 +159,7 @@ export default function PomodoroRoomScreen() {
             onPress={() => safeBack('/focus')}
             style={s.roundButton}
           >
-            <Feather name="chevron-left" size={z(23)} color="#263653" />
+            <ChevronLeft size={z(23)} color="#263653" strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle} numberOfLines={1}>Pomodoro room</Text>
           <Pressable
@@ -148,7 +168,7 @@ export default function PomodoroRoomScreen() {
             onPress={() => setRoomMenuOpen(true)}
             style={s.roundButton}
           >
-            <Feather name="more-horizontal" size={z(25)} color={COLORS.title} />
+            <MoreHorizontal size={z(25)} color={COLORS.title} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -169,7 +189,7 @@ export default function PomodoroRoomScreen() {
               onPress={shareRoom}
               style={s.shareButton}
             >
-              <Feather name="share-2" size={z(21)} color="#4B5060" />
+              <Share2 size={z(21)} color="#4B5060" strokeWidth={2} />
             </Pressable>
           </View>
         </View>
@@ -186,10 +206,14 @@ export default function PomodoroRoomScreen() {
           </View>
           <Text style={s.roomTitle} numberOfLines={2}>{roomTitle}</Text>
           <View style={s.hostBar}>
-            <Image source={AVATARS.host} style={s.hostAvatar} />
-            <Text style={s.hostLabel}>• Host</Text>
+            {hostAvatarUrl ? (
+              <Image source={{ uri: hostAvatarUrl }} style={s.hostAvatar} />
+            ) : (
+              <Image source={AVATARS.host} style={s.hostAvatar} />
+            )}
+            <Text style={s.hostLabel}>• Host {roomData?.hostName ? `(${roomData.hostName})` : ''}</Text>
             <View style={s.cyclePill}>
-              <Feather name="clock" size={z(15)} color={COLORS.navy} />
+              <Clock size={z(15)} color={COLORS.navy} strokeWidth={2} />
               <Text style={s.cycleText}>25m học • 5m nghỉ (4 chu kỳ)</Text>
             </View>
           </View>
@@ -207,16 +231,16 @@ export default function PomodoroRoomScreen() {
             {visibleMembers.map((member, index) => (
               <View key={member.name} style={[s.memberRow, index === visibleMembers.length - 1 && s.lastMemberRow]}>
                 <View style={s.memberPhotoWrap}>
-                  {member.avatar ? (
+                  {member.avatarUrl ? (
+                    <Image source={{ uri: member.avatarUrl }} style={s.memberAvatarImage} />
+                  ) : member.avatar ? (
                     <Image source={member.avatar} style={s.memberAvatarImage} />
                   ) : (
                     <View style={[s.memberAvatar, s.initialsAvatar]}>
-                      <Text style={s.initialsText}>VQ</Text>
+                      <Text style={s.initialsText}>{member.name ? member.name.split(' ').slice(-1)[0].substring(0, 2).toUpperCase() : 'VK'}</Text>
                     </View>
                   )}
-                  {!member.avatar && (
-                    <View style={[s.memberStatusDot, member.resting && s.restingDot]} />
-                  )}
+                  <View style={[s.memberStatusDot, member.resting && s.restingDot]} />
                 </View>
                 <View style={s.memberCopy}>
                   <View style={s.memberNameRow}>
@@ -248,7 +272,7 @@ export default function PomodoroRoomScreen() {
         </View>
 
         <View style={s.audioCard}>
-          <Feather name="headphones" size={z(20)} color={COLORS.title} />
+          <Headphones size={z(20)} color={COLORS.title} strokeWidth={2} />
           <Text style={s.audioLabel}>Âm thanh nền (Mưa thư viện)</Text>
           <Pressable
             accessibilityRole="switch"
@@ -265,14 +289,26 @@ export default function PomodoroRoomScreen() {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => router.push({
-            pathname: '/pomodoro-session',
-            params: { roomId: roomId ?? 'leetcode', title: roomTitle },
-          })}
+          onPress={async () => {
+            const targetRoomId = roomId ?? 'leetcode';
+            try {
+              const u = await authService.getCurrentUser().catch(() => null);
+              const avatar = currentUserAvatar || u?.avatarUrl;
+              await pomodoroService.joinRoom(targetRoomId, {
+                id: u?.id || 'usr_01',
+                fullName: u?.fullName || 'Sinh viên VKU',
+                avatarUrl: avatar || undefined
+              }).catch(() => {});
+            } catch {}
+            router.push({
+              pathname: '/pomodoro-session',
+              params: { roomId: targetRoomId, title: roomTitle },
+            });
+          }}
           style={s.joinRoomButton}
         >
           <Text style={s.joinRoomText}>Tham gia phòng</Text>
-          <Feather name="arrow-right" size={z(20)} color={COLORS.white} />
+          <ArrowRight size={z(20)} color={COLORS.white} strokeWidth={2.2} />
         </Pressable>
       </ScrollView>
       <DropdownMenu

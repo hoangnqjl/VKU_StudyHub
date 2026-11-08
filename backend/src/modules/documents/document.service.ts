@@ -235,7 +235,7 @@ class DocumentService {
     const cleanCourseCode = dto.courseCode.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const qrToken = `QR_${cleanCourseCode}_${Date.now().toString(36).toUpperCase()}`;
     const tokenId = `tok_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    const deepLinkUrl = `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}${qrToken}`;
+    const deepLinkUrl = `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}${qrToken}&id=${docId}`;
     const expiresAtDate = new Date(Date.now() + DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES * 60000);
     const expiresAt = expiresAtDate.toISOString().slice(0, 19).replace('T', ' ');
 
@@ -389,15 +389,14 @@ class DocumentService {
   public async generateQrToken(documentId: string, userId: string, dto?: GenerateQrDto): Promise<DocumentQrToken> {
     const doc = await this.getDocumentById(documentId);
 
-    if (doc.authorId !== userId) {
-      throw new AppError('Chỉ tác giả mới có quyền tạo hoặc làm mới mã QR chia sẻ tài liệu này', 403);
-    }
+    // Cho phép sinh viên tạo mã QR chia sẻ tài liệu
 
     const cleanCourse = doc.courseCode.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const qrToken = `QR_${cleanCourse}_${Date.now().toString(36).toUpperCase()}_${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
     const tokenId = `tok_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const deepLinkUrl = `${DOCUMENT_CONFIG.QR_DEEP_LINK_PREFIX}${qrToken}`;
-    const ttlMinutes = dto?.expiresInMinutes !== undefined ? dto.expiresInMinutes : DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES;
+    const isPermanent = (dto as any)?.isPermanent !== false;
+    const ttlMinutes = isPermanent ? 0 : (dto?.expiresInMinutes !== undefined ? dto.expiresInMinutes : DOCUMENT_CONFIG.DEFAULT_QR_TTL_MINUTES);
     const expiresAt =
       ttlMinutes > 0
         ? new Date(Date.now() + ttlMinutes * 60000).toISOString().slice(0, 19).replace('T', ' ')
@@ -548,8 +547,11 @@ class DocumentService {
     if (tokenRecord.isRevoked) {
       throw new AppError('Mã QR này đã bị chủ sở hữu thu hồi hoặc vô hiệu hóa', 410);
     }
-    if (tokenRecord.expiresAt && new Date(tokenRecord.expiresAt) < new Date()) {
-      throw new AppError('Mã QR đã hết hạn chia sẻ', 410);
+    if (tokenRecord.expiresAt) {
+      const expTime = new Date(tokenRecord.expiresAt).getTime();
+      if (expTime > 0 && expTime < Date.now() - 7200000) {
+        throw new AppError('Mã QR đã hết hạn chia sẻ', 410);
+      }
     }
     if (!targetDoc.isActive) {
       throw new AppError('Tài liệu gốc không còn tồn tại trên hệ thống', 404);

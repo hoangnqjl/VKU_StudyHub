@@ -37,7 +37,7 @@ import { useAlert } from '../components/AlertContext';
 import { authService } from '../services/authService';
 
 import { apiClient } from '../services/apiClient';
-import { Feather } from '@expo/vector-icons';
+import { Camera, ChevronDown } from '../components/DynamicLucideIcon';
 import * as DocumentPicker from 'expo-document-picker';
 import { pickAndUploadAvatar } from '../utils/avatarPicker';
 
@@ -285,16 +285,24 @@ export default function EditProfileScreen() {
 
   const handlePickAvatar = async () => {
     try {
-      const res = await DocumentPicker.getDocumentAsync({
-        type: ['image/jpeg', 'image/png', 'image/webp'],
-        copyToCacheDirectory: true,
-      });
-      if (!res.canceled && res.assets && res.assets.length > 0) {
-        setAvatarUri(res.assets[0].uri);
-        showSuccess('Đã chọn ảnh đại diện', 'Ảnh đại diện mới đã sẵn sàng. Nhấn "Lưu thay đổi" để cập nhật.');
+      setIsUploadingAvatar(true);
+      const res = await pickAndUploadAvatar();
+      if (res.success && res.avatarUrl) {
+        setAvatarUri(res.avatarUrl);
+        setAvatarError(false);
+        showSuccess(
+          'Đã cập nhật ảnh đại diện',
+          res.isCloudinary
+            ? 'Đã tải ảnh lên kho Cloudinary VKU thành công!'
+            : 'Đã lưu ảnh đại diện thành công!'
+        );
+      } else if (res.error) {
+        showError('Không thể tải ảnh', res.error);
       }
-    } catch {
-      // Ignore
+    } catch (err: any) {
+      showError('Lỗi tải ảnh', err.message || 'Có lỗi xảy ra khi chọn ảnh');
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -496,12 +504,15 @@ export default function EditProfileScreen() {
               accessibilityLabel="Chọn ảnh đại diện từ camera hoặc thư viện"
               style={s.avatarBadge}
               onPress={handlePickAvatar}
+              disabled={isUploadingAvatar}
             >
-              <Feather name="camera" size={z(15)} color={C.primary} />
+              <Camera size={z(15)} color={C.primary} strokeWidth={2} />
             </Pressable>
           </View>
-          <Pressable onPress={handlePickAvatar}>
-            <Text style={s.changePhoto}>Đổi ảnh đại diện</Text>
+          <Pressable onPress={handlePickAvatar} disabled={isUploadingAvatar}>
+            <Text style={s.changePhoto}>
+              {isUploadingAvatar ? 'Đang tải ảnh...' : 'Đổi ảnh đại diện'}
+            </Text>
           </Pressable>
 
 
@@ -650,7 +661,7 @@ export default function EditProfileScreen() {
 
               <Text style={s.selectText}>{faculty}</Text>
 
-              <Feather name="chevron-down" size={z(17)} color={C.muted} />
+              <ChevronDown size={z(17)} color={C.muted} strokeWidth={2} />
 
             </Pressable>
 
@@ -668,7 +679,7 @@ export default function EditProfileScreen() {
 
               <Text style={s.selectText}>{academicYear || "Khóa 2023 (K23)"}</Text>
 
-              <Feather name="chevron-down" size={z(17)} color={C.muted} />
+              <ChevronDown size={z(17)} color={C.muted} strokeWidth={2} />
 
             </Pressable>
 

@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Bell, Search, SlidersHorizontal, Crosshair, QrCode, Timer, ChevronRight } from 'lucide-react-native';
+import { useNotificationBadge } from '../utils/useNotificationBadge';
 import { useDesign } from '../components/design-scale';
 import StudyHubTabBar from '../components/study-hub-tab-bar';
 import { TemoScreenTransition } from '../components/temoEffects';
@@ -74,6 +76,7 @@ const F = {
 const NEARBY: any[] = [];
 export default function HomeScreen() {
   const { s, z } = useDesign(raw);
+  const unreadCount = useNotificationBadge();
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -106,8 +109,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
-      <TemoScreenTransition>
-        <ScrollView
+      <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -125,8 +127,8 @@ export default function HomeScreen() {
               style={s.bellBtn}
               onPress={() => router.push('/table-invitation' as any)}
             >
-              <Image source={IMG.bell} style={{ width: z(19), height: z(21) }} />
-              <View style={s.bellDot} />
+              <Bell size={z(20)} color={C.primary} strokeWidth={2} />
+              {unreadCount > 0 && <View style={s.bellDot} />}
             </Pressable>
             <Pressable style={s.avatarBtn} onPress={() => router.push('/profile' as any)}>
               {(!avatarError && (userAvatar || userProfile?.avatarUrl) && !(userAvatar || userProfile?.avatarUrl).includes('avatar_usr_01_default.png')) ? (<Image source={{ uri: userAvatar || userProfile?.avatarUrl }} onError={() => setAvatarError(true)} style={{ width: 40, height: 40, borderRadius: 20 }} />) : (<Image source={IMG.avatar} style={{ width: 40, height: 40, borderRadius: 20 }} />)}
@@ -148,7 +150,7 @@ export default function HomeScreen() {
             onPress={search}
             hitSlop={8}
           >
-            <Image source={IMG.search} style={{ width: z(15), height: z(15) }} />
+            <Search size={z(17)} color={C.muted} strokeWidth={2} />
           </Pressable>
           <TextInput
             style={s.searchInput}
@@ -160,7 +162,7 @@ export default function HomeScreen() {
             onSubmitEditing={search}
           />
           <Pressable style={s.filterBtn}>
-            <Image source={IMG.filter} style={{ width: z(13), height: z(11) }} />
+            <SlidersHorizontal size={z(16)} color={C.muted} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -171,7 +173,7 @@ export default function HomeScreen() {
           <View style={[s.ring, s.ring1]} />
 
           <View style={s.radarBadge}>
-            <Image source={IMG.target} style={s.radarIcon} />
+            <Crosshair size={z(24)} color="#1E293B" strokeWidth={2.2} />
           </View>
 
           <Text style={s.radarLabel}>STUDY RADAR</Text>
@@ -215,14 +217,14 @@ export default function HomeScreen() {
           style={[s.action, s.scanAction]}
         >
           <View style={s.actionIcon}>
-            <Image source={IMG.scan} style={{ width: z(20), height: z(20.5) }} />
+            <QrCode size={z(20)} color="#E8920C" strokeWidth={2} />
           </View>
           <View style={s.actionText}>
             <Text style={s.actionTitle}>Quét tài liệu</Text>
             <Text style={s.actionSub}>Lưu ngay bằng QR</Text>
           </View>
           <View style={[s.actionChev, { backgroundColor: '#FFFDF9' }]}>
-            <Image source={IMG.scanChev} style={{ width: z(8), height: z(11.5) }} />
+            <ChevronRight size={z(16)} color="#D08000" strokeWidth={2.4} />
           </View>
         </Pressable>
 
@@ -234,14 +236,14 @@ export default function HomeScreen() {
           style={[s.action, s.pomoAction, { marginTop: z(12) }]}
         >
           <View style={s.actionIcon}>
-            <Image source={IMG.pomo} style={{ width: z(20), height: z(23.5) }} />
+            <Timer size={z(20)} color={C.red} strokeWidth={2} />
           </View>
           <View style={s.actionText}>
             <Text style={s.actionTitle}>Pomodoro</Text>
             <Text style={s.actionSub}>Vào phòng học chung</Text>
           </View>
           <View style={[s.actionChev, { backgroundColor: '#FFFAFA' }]}>
-            <Image source={IMG.pomoChev} style={{ width: z(8), height: z(11.5) }} />
+            <ChevronRight size={z(16)} color="#E05050" strokeWidth={2.4} />
           </View>
         </Pressable>
 
@@ -287,14 +289,13 @@ Hãy bật tín hiệu để kết nối cùng bạn bè!
                   </Text>
                 </View>
                 <View style={s.nearChev}>
-                  <Image source={IMG.arrow} style={{ width: z(14), height: z(14.5) }} />
+                  <ChevronRight size={z(16)} color={C.muted} strokeWidth={2} />
                 </View>
               </Pressable>
             );
           })
         )}
       </ScrollView>
-      </TemoScreenTransition>
 
       {/* ===== Thanh điều hướng dưới ===== */}
       <StudyHubTabBar active="home" bottom={Math.max(insets.bottom - 20, 13)} />
@@ -416,6 +417,7 @@ const raw = StyleSheet.create({
     fontSize: 13,
     letterSpacing: -0.17,
     color: C.body,
+      ...Platform.select({ web: { outlineStyle: 'none' as any } }),
   },
   filterBtn: {
     width: 28,
@@ -470,6 +472,8 @@ const raw = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: C.yellow,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: C.yellow,
     shadowOpacity: 0.4,
     shadowRadius: 16,

@@ -1,8 +1,20 @@
 import { useMemo, useState, useEffect } from 'react';
-import { radarService } from '../services';
+import { radarService, authService } from '../services';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAlert } from '../components/AlertContext';
 import DropdownMenu, { DropdownMenuItem } from '../components/DropdownMenu';
-import { Feather } from '@expo/vector-icons';
+import {
+  Bell,
+  Search,
+  SlidersHorizontal,
+  Crosshair,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  Navigation,
+  BookOpen,
+  Check,
+} from 'lucide-react-native';
 import {
   Image,
   Pressable,
@@ -24,6 +36,7 @@ import {
 } from '@expo-google-fonts/inter';
 
 import StudyHubTabBar from '../components/study-hub-tab-bar';
+import { useNotificationBadge } from '../utils/useNotificationBadge';
 import { useDesign } from '../components/design-scale';
 import { TemoStaggeredView, TemoPressable, TemoScreenTransition } from '../components/temoEffects';
 
@@ -107,6 +120,7 @@ const STUDENTS: any[] = [];
 const DEFAULT_VKU_STUDENTS: any[] = [];
 export default function RadarScreen() {
   const { s, z } = useDesign(raw);
+  const unreadCount = useNotificationBadge();
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -128,6 +142,18 @@ export default function RadarScreen() {
   }, [selectedLocId]);
 
   const [activeBuddies, setActiveBuddies] = useState<any[]>([]);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState(false);
+  useEffect(() => {
+    authService.getCurrentUser().then(u => {
+      if (u?.avatarUrl) setUserAvatar(u.avatarUrl);
+    }).catch(() => {});
+    AsyncStorage.getItem('@vku_user_avatar').then(a => {
+      if (a && !a.includes('avatar_usr_01_default.png')) {
+        setUserAvatar(a);
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleToggleReady = async () => {
     const nextState = !ready;
@@ -229,8 +255,8 @@ export default function RadarScreen() {
               style={s.bellBtn}
               onPress={() => router.push('/table-invitation' as any)}
             >
-              <Image source={IMG.bell} style={{ width: z(19), height: z(21) }} />
-              <View style={s.bellDot} />
+              <Bell size={z(20)} color={C.primary} strokeWidth={2} />
+              {unreadCount > 0 && <View style={s.bellDot} />}
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -238,7 +264,18 @@ export default function RadarScreen() {
               style={s.avatarBtn}
               onPress={() => router.push('/profile' as any)}
             >
-              <Text style={s.avatarText}>VKU</Text>
+              {!avatarError && userAvatar ? (
+                <Image
+                  source={{ uri: userAvatar }}
+                  onError={() => setAvatarError(true)}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              ) : (
+                <Image
+                  source={IMG.avatar}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              )}
             </Pressable>
           </View>
         </View>
@@ -248,7 +285,7 @@ export default function RadarScreen() {
           <View style={[s.ring, s.ringMiddle]} />
           <View style={[s.ring, s.ringInner]} />
           <View style={s.radarBadge}>
-            <Image source={IMG.target} style={s.radarIcon} />
+            <Crosshair size={z(24)} color="#1E293B" strokeWidth={2.2} />
           </View>
 
           <Text style={s.radarLabel}>STUDY RADAR</Text>
@@ -308,9 +345,7 @@ export default function RadarScreen() {
             style={s.locationCard}
           >
             <View style={s.locationIconBox}>
-              <View style={s.pinOuter}>
-                <View style={s.pinInner} />
-              </View>
+              <MapPin size={z(20)} color={C.primary} strokeWidth={2.2} />
             </View>
             <View style={s.locationText}>
               <Text style={s.locationTitle}>
@@ -320,16 +355,16 @@ export default function RadarScreen() {
                 ● {activeBuddies.length} sinh viên đang online
               </Text>
             </View>
-            <Feather
-              name={locationDropdownOpen ? 'chevron-up' : 'chevron-down'}
-              size={z(20)}
-              color={C.muted}
-            />
+            {locationDropdownOpen ? (
+              <ChevronUp size={z(20)} color={C.muted} strokeWidth={2} />
+            ) : (
+              <ChevronDown size={z(20)} color={C.muted} strokeWidth={2} />
+            )}
           </Pressable>
         </View>
 
         <View style={s.searchBox}>
-          <Image source={IMG.search} style={{ width: z(15), height: z(15) }} />
+          <Search size={z(16)} color={C.muted} strokeWidth={2} />
           <TextInput
             accessibilityLabel="Tìm bạn, môn học, tài liệu"
             style={s.searchInput}
@@ -345,7 +380,7 @@ export default function RadarScreen() {
             style={s.filterButton}
             onPress={() => setFilter((value) => (value === 'Cùng môn: Web' ? 'Gần tôi (<100m)' : 'Cùng môn: Web'))}
           >
-            <Image source={IMG.filter} style={{ width: z(13), height: z(11) }} />
+            <SlidersHorizontal size={z(15)} color={C.muted} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -364,7 +399,13 @@ export default function RadarScreen() {
                 onPress={() => setFilter(name)}
                 style={[s.filterChip, selected ? s.filterChipOn : s.filterChipOff]}
               >
-                {name.startsWith('Gần') && <Text style={[s.nearbyIcon, selected && s.whiteText]}>➤</Text>}
+                {name.startsWith('Gần') && (
+                  <Navigation
+                    size={z(12)}
+                    color={selected ? '#FFFFFF' : C.body}
+                    style={{ marginRight: 6 }}
+                  />
+                )}
                 <Text style={[s.filterText, selected && s.whiteText]}>{name}</Text>
                 {selected && <Text style={s.countBadge}>{students.length}</Text>}
               </Pressable>
@@ -400,7 +441,9 @@ export default function RadarScreen() {
                 <View style={s.studentInfo}>
                   <View style={s.nameRow}>
                     <Text style={s.studentName} numberOfLines={1}>{student.name}</Text>
-                    <View style={s.verifiedBadge}><Text style={s.verifiedCheck}>✓</Text></View>
+                    <View style={s.verifiedBadge}>
+                      <Check size={z(9)} color="#FFFFFF" strokeWidth={3} />
+                    </View>
                   </View>
                   <Text style={s.studentFaculty} numberOfLines={1}>{student.faculty}</Text>
                 </View>
@@ -411,7 +454,7 @@ export default function RadarScreen() {
 
               <View style={s.studyDetails}>
                 <View style={s.studyTitleRow}>
-                  <Text style={s.bookIcon}>▣</Text>
+                  <BookOpen size={z(14)} color={C.primary} strokeWidth={2.2} style={{ marginRight: 6 }} />
                   <Text style={s.studyTitle} numberOfLines={1}>{student.subject}</Text>
                 </View>
                 <View style={s.studyLocationRow}>
@@ -539,7 +582,8 @@ const raw = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: C.brand,
+    overflow: 'hidden',
+    backgroundColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -758,6 +802,7 @@ const raw = StyleSheet.create({
     fontFamily: F.regular,
     fontSize: 13,
     color: C.ink,
+      ...Platform.select({ web: { outlineStyle: 'none' as any } }),
   },
   filterButton: {
     width: 28,

@@ -7,7 +7,7 @@ import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } fro
 
 
 
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 
 
@@ -15,7 +15,16 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 
 
-import { Feather } from '@expo/vector-icons';
+import {
+  X,
+  LucideImage,
+  Zap,
+  Camera,
+  FileText,
+  CloudDownload,
+  Eye,
+  ScanLine,
+} from '../components/DynamicLucideIcon';
 
 
 
@@ -208,24 +217,27 @@ export default function ScanDocumentScreen() {
   const [viewerVisible, setViewerVisible] = useState(false);
 
   const [recognizedDoc, setRecognizedDoc] = useState<{
-
     id: string;
-
     title: string;
-
     size: string;
-
     subject: string;
-
     owner: string;
-
     studentId: string;
-
+    fileUrl?: string;
+    format?: string;
+    qrToken?: string;
   } | null>(null);
 
 
 
   const [notice, setNotice] = useState('');
+  const routeParams = useLocalSearchParams<{ token?: string; document?: string; id?: string }>();
+  useEffect(() => {
+    const rawCode = routeParams.token || routeParams.document || routeParams.id;
+    if (rawCode) {
+      handleScannedCode(rawCode);
+    }
+  }, [routeParams.token, routeParams.document, routeParams.id]);
 
 
 
@@ -494,25 +506,12 @@ export default function ScanDocumentScreen() {
 
 
       let qrToken = data;
-
-
-
-      if (data.includes('document=')) {
-
-
-
-        qrToken = data.split('document=')[1];
-
-
-
+      if (data.includes('token=')) {
+        qrToken = data.split('token=')[1].split('&')[0];
+      } else if (data.includes('document=')) {
+        qrToken = data.split('document=')[1].split('&')[0];
       } else if (data.includes('qr=')) {
-
-
-
-        qrToken = data.split('qr=')[1];
-
-
-
+        qrToken = data.split('qr=')[1].split('&')[0];
       }
 
 
@@ -530,33 +529,15 @@ export default function ScanDocumentScreen() {
 
 
         setRecognizedDoc({
-
-
-
           id: doc.id,
-
-
-
           title: doc.title,
-
-
-
-          size: typeof doc.fileSize === 'number' ? `${(doc.fileSize / (1024 * 1024)).toFixed(1)} MB` : String(doc.fileSize || '18.6 MB'),
-
-
-
+          size: typeof doc.fileSize === 'number' ? `${(doc.fileSize / (1024 * 1024)).toFixed(1)} MB` : String((doc as any).fileSizeBytes ? `${Math.round(((doc as any).fileSizeBytes / (1024 * 1024)) * 10) / 10} MB` : (doc.fileSize || '18.6 MB')),
           subject: doc.subject || doc.courseName || 'Công nghệ thông tin',
-
-
-
-          owner: doc.ownerName || 'Nguyễn Quang Hoàng',
-
-
-
+          owner: doc.ownerName || (doc as any).authorName || 'Nguyễn Quang Hoàng',
           studentId: doc.ownerStudentId || '23IT.B063 · Lớp 23SE5',
-
-
-
+          fileUrl: (doc as any).fileUrl,
+          format: (doc as any).fileType || 'PDF',
+          qrToken: qrToken
         });
 
 
@@ -691,7 +672,7 @@ export default function ScanDocumentScreen() {
 
           >
 
-            <Feather name="x" size={z(25)} color={COLORS.title} />
+            <X size={z(25)} color={COLORS.title} strokeWidth={2.2} />
 
           </Pressable>
 
@@ -703,31 +684,17 @@ export default function ScanDocumentScreen() {
 
             <Pressable
 
-
-
               accessibilityRole="button"
-
-
 
               accessibilityLabel="Tải ảnh QR từ máy hoặc thư viện"
 
-
-
               onPress={handlePickQrImage}
-
-
 
               style={[s.headerButton, { marginRight: z(8) }]}
 
-
-
             >
 
-
-
-              <Feather name="image" size={z(19)} color={COLORS.navy} />
-
-
+              <LucideImage size={z(19)} color={COLORS.navy} strokeWidth={2} />
 
             </Pressable>
 
@@ -735,35 +702,19 @@ export default function ScanDocumentScreen() {
 
             <Pressable
 
-
-
               accessibilityRole="button"
-
-
 
               accessibilityLabel={flashOn ? 'Tắt đèn flash' : 'Bật đèn flash'}
 
-
-
               accessibilityState={{ checked: flashOn }}
-
-
 
               onPress={() => setFlashOn((value) => !value)}
 
-
-
               style={[s.headerButton, flashOn && { backgroundColor: '#FEF3C7' }]}
-
-
 
             >
 
-
-
-              <Feather name="zap" size={z(19)} color={flashOn ? '#F59E0B' : COLORS.title} />
-
-
+              <Zap size={z(19)} color={flashOn ? '#F59E0B' : COLORS.title} strokeWidth={2} />
 
             </Pressable>
 
@@ -913,7 +864,7 @@ export default function ScanDocumentScreen() {
 
 
 
-            <Feather name="camera" size={z(17)} color={COLORS.navy} />
+            <Camera size={z(17)} color={COLORS.navy} strokeWidth={2} />
 
 
 
@@ -959,7 +910,7 @@ export default function ScanDocumentScreen() {
 
               <View style={s.documentCard}>
                 <View style={s.pdfIcon}>
-                  <Feather name="file-text" size={z(25)} color={COLORS.red} />
+                  <FileText size={z(25)} color={COLORS.red} strokeWidth={2} />
                   <Text style={s.pdfLabel}>{(recognizedDoc as any).format || "PDF"}</Text>
                 </View>
 
@@ -993,7 +944,7 @@ export default function ScanDocumentScreen() {
                 onPress={async () => {
                   try {
                     showLoading("Đang lưu tài liệu vào kho cá nhân...");
-                    await documentService.claimQRDocument(recognizedDoc?.id || "").catch(() => {});
+                    await documentService.claimQRDocument((recognizedDoc as any)?.qrToken || recognizedDoc?.id || "").catch(() => {});
                     hideLoading();
                     showSuccess(
                       "Lưu thành công!",
@@ -1007,7 +958,7 @@ export default function ScanDocumentScreen() {
                 }}
                 style={s.saveButton}
               >
-                <Feather name="download-cloud" size={z(20)} color={COLORS.white} />
+                <CloudDownload size={z(20)} color={COLORS.white} strokeWidth={2} />
                 <Text style={s.saveButtonText}>Lưu vào Kho tài liệu cá nhân</Text>
               </Pressable>
 
@@ -1016,14 +967,14 @@ export default function ScanDocumentScreen() {
                 onPress={() => setViewerVisible(true)}
                 style={s.previewButton}
               >
-                <Feather name="eye" size={z(20)} color={COLORS.navy} />
+                <Eye size={z(20)} color={COLORS.navy} strokeWidth={2} />
                 <Text style={s.previewButtonText}>Mở xem trực tiếp ngay</Text>
               </Pressable>
             </>
           ) : (
             <View style={s.unrecognizedContainer}>
               <View style={s.unrecognizedIconWrap}>
-                <Feather name="maximize" size={z(28)} color="#94A3B8" />
+                <ScanLine size={z(28)} color="#94A3B8" strokeWidth={2} />
               </View>
               <Text style={s.unrecognizedTitle}>Chưa có tài liệu được nhận diện!</Text>
               <Text style={s.unrecognizedSub}>

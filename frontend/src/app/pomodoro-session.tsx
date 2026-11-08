@@ -3,7 +3,19 @@ import { useEffect, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, {
+  ChevronLeft,
+  MoreHorizontal,
+  Coffee,
+  PauseCircle,
+  RefreshCw,
+  Play,
+  Pause,
+  Pencil,
+  Music,
+  Volume2,
+  LogOut,
+} from '../components/DynamicLucideIcon';
 import Svg, { Circle } from 'react-native-svg';
 import {
   Inter_400Regular,
@@ -255,7 +267,7 @@ export default function PomodoroSessionScreen() {
             onPress={() => safeBack('/focus')}
             style={s.roundButton}
           >
-            <Feather name="chevron-left" size={z(23)} color="#263653" />
+            <ChevronLeft size={z(23)} color="#263653" strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle} numberOfLines={1}>{roomTitle}</Text>
           <Pressable
@@ -264,17 +276,19 @@ export default function PomodoroSessionScreen() {
             onPress={() => setRoomMenuOpen(true)}
             style={s.roundButton}
           >
-            <Feather name="more-horizontal" size={z(25)} color={COLORS.title} />
+            <MoreHorizontal size={z(25)} color={COLORS.title} strokeWidth={2} />
           </Pressable>
         </View>
 
         <View style={s.timerCard}>
           <View style={s.syncBadge}>
-            <Feather
-              name={onBreak ? 'coffee' : paused || remainingSeconds === 0 ? 'pause-circle' : 'refresh-cw'}
-              size={z(14)}
-              color={onBreak ? '#D97706' : paused || remainingSeconds === 0 ? COLORS.body : COLORS.green}
-            />
+            {onBreak ? (
+              <Coffee size={z(14)} color="#D97706" strokeWidth={2} />
+            ) : paused || remainingSeconds === 0 ? (
+              <PauseCircle size={z(14)} color={COLORS.body} strokeWidth={2} />
+            ) : (
+              <RefreshCw size={z(14)} color={COLORS.green} strokeWidth={2} />
+            )}
             <Text style={s.syncText}>{sessionStatusLabel}</Text>
           </View>
 
@@ -323,7 +337,11 @@ export default function PomodoroSessionScreen() {
               onPress={togglePause}
               style={s.pauseButton}
             >
-              <Feather name={paused ? 'play' : 'pause'} size={z(19)} color={COLORS.white} />
+              {paused ? (
+                <Play size={z(19)} color={COLORS.white} strokeWidth={2} />
+              ) : (
+                <Pause size={z(19)} color={COLORS.white} strokeWidth={2} />
+              )}
               <Text style={s.pauseButtonText}>{paused ? 'Tiếp tục phòng' : 'Tạm dừng phòng'}</Text>
             </Pressable>
             <Pressable
@@ -339,7 +357,7 @@ export default function PomodoroSessionScreen() {
 
         <View style={s.statusCard}>
           <View style={s.sectionHeading}>
-            <Feather name="edit-3" size={z(17)} color={COLORS.navy} />
+            <Pencil size={z(17)} color={COLORS.navy} strokeWidth={2} />
             <Text style={s.sectionTitle}>Trạng thái học tập</Text>
           </View>
           <View style={s.statusChoices}>
@@ -373,7 +391,7 @@ export default function PomodoroSessionScreen() {
 
         <View style={s.noiseCard}>
           <View style={s.musicIcon}>
-            <Feather name="music" size={z(19)} color={COLORS.navy} />
+            <Music size={z(19)} color={COLORS.navy} strokeWidth={2} />
           </View>
           <View style={s.noiseCopy}>
             <Text style={s.noiseTitle}>White Noise</Text>
@@ -389,7 +407,7 @@ export default function PomodoroSessionScreen() {
             }}
             style={[s.noiseSwitch, whiteNoiseOn && s.noiseSwitchOn]}
           >
-            <Feather name="volume-2" size={z(15)} color={whiteNoiseOn ? COLORS.navy : COLORS.body} />
+            <Volume2 size={z(15)} color={whiteNoiseOn ? COLORS.navy : COLORS.body} strokeWidth={2} />
             <Text style={[s.noiseSwitchText, whiteNoiseOn && s.noiseSwitchTextOn]}>
               {whiteNoiseOn ? 'Đang bật' : 'Đang tắt'}
             </Text>
@@ -453,7 +471,7 @@ export default function PomodoroSessionScreen() {
           onPress={handleCloseRoom}
           style={s.leaveRoomBtn}
         >
-          <Feather name="log-out" size={z(16)} color="#DC2626" />
+          <LogOut size={z(16)} color="#DC2626" strokeWidth={2} />
           <Text style={s.leaveRoomBtnText}>Kết thúc & Đóng phòng học</Text>
         </TemoPressable>
       </ScrollView>

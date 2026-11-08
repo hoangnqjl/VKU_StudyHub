@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, { Check, ArrowRight } from '../components/DynamicLucideIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   useFonts,
@@ -169,7 +169,7 @@ export default function OnboardingScreen() {
               <Animated.View style={[s.visualCircleOuter, floatStyle as any]}>
                 <View style={[s.visualCircleInner, { backgroundColor: slide.badgeBg }]}>
                   <View style={[s.iconBox, { backgroundColor: slide.iconColor }]}>
-                    <Feather name={slide.iconName as any} size={z(36)} color={C.white} />
+                    <LucideIcon name={slide.iconName} size={z(36)} color={C.white} strokeWidth={2} />
                   </View>
                 </View>
               </Animated.View>
@@ -192,7 +192,7 @@ export default function OnboardingScreen() {
               <View style={s.tagsRow}>
                 {slide.tags.map((tag) => (
                   <View key={tag} style={s.tagChip}>
-                    <Feather name="check" size={z(12)} color={C.navy} />
+                    <Check size={z(12)} color={C.navy} strokeWidth={2.8} />
                     <Text style={s.tagText}>{tag}</Text>
                   </View>
                 ))}
@@ -228,7 +228,7 @@ export default function OnboardingScreen() {
             {activeIndex === SLIDES.length - 1 ? 'Bắt đầu khám phá ngay 🚀' : 'Tiếp tục'}
           </Text>
           {activeIndex < SLIDES.length - 1 && (
-            <Feather name="arrow-right" size={z(18)} color={C.white} style={{ marginLeft: 6 }} />
+            <ArrowRight size={z(18)} color={C.white} strokeWidth={2.2} style={{ marginLeft: 6 }} />
           )}
         </Pressable>
 

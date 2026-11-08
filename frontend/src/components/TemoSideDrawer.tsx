@@ -11,7 +11,7 @@ import {
   Easing,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, { Check, LogOut, ChevronRight } from './DynamicLucideIcon';
 import { authService } from '../services';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -130,7 +130,7 @@ export default function TemoSideDrawer({ children }: TemoSideDrawerProps) {
             <View style={styles.nameRow}>
               <Text style={styles.userName} numberOfLines={1}>{displayName}</Text>
               <View style={styles.verifiedBadge}>
-                <Feather name="check" size={10} color="#FFFFFF" />
+                <Check size={10} color="#FFFFFF" strokeWidth={3} />
               </View>
             </View>
             <Text style={styles.userStudentId}>MSSV: {studentId}</Text>
@@ -185,7 +185,7 @@ export default function TemoSideDrawer({ children }: TemoSideDrawerProps) {
             ]}
           >
             <View style={styles.logoutIconBox}>
-              <Feather name="log-out" size={18} color="#EF4444" />
+              <LogOut size={18} color="#EF4444" strokeWidth={2} />
             </View>
             <Text style={styles.logoutText}>Đăng xuất tài khoản</Text>
           </Pressable>
@@ -228,7 +228,7 @@ function SideMenuItem({
   badge,
   onPress,
 }: {
-  icon: keyof typeof Feather.glyphMap;
+  icon: string;
   label: string;
   badge?: string;
   onPress: () => void;
@@ -243,7 +243,7 @@ function SideMenuItem({
       ]}
     >
       <View style={styles.menuIconContainer}>
-        <Feather name={icon} size={19} color="#101D83" />
+        <LucideIcon name={icon} size={19} color="#101D83" strokeWidth={2} />
       </View>
       <Text style={styles.menuItemLabel}>{label}</Text>
       {badge && (
@@ -251,7 +251,7 @@ function SideMenuItem({
           <Text style={styles.badgeText}>{badge}</Text>
         </View>
       )}
-      <Feather name="chevron-right" size={16} color="#94A3B8" style={{ marginLeft: 'auto' }} />
+      <ChevronRight size={16} color="#94A3B8" strokeWidth={2} style={{ marginLeft: 'auto' }} />
     </Pressable>
   );
 }

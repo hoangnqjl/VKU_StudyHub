@@ -1,18 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { Animated, Image, Platform, Pressable, StyleSheet, Text, View, Easing, type ImageSourcePropType } from 'react-native';
+import { useState, useRef, useEffect, type ComponentType } from 'react';
+import { Animated, Platform, Pressable, StyleSheet, Text, View, Easing } from 'react-native';
 import { TemoPressable } from './temoEffects';
 import { router } from 'expo-router';
 import { BlurView } from 'expo-blur';
+import { Home, Radio, BookOpen, Timer, Plus, type LucideProps } from 'lucide-react-native';
 
 import { useDesign } from './design-scale';
-
-const icons = {
-  home: require('../../assets/images/home/tab-home.png'),
-  radar: require('../../assets/images/home/tab-radar.png'),
-  docs: require('../../assets/images/home/tab-docs.png'),
-  focus: require('../../assets/images/home/tab-timer.png'),
-  plus: require('../../assets/images/home/plus.png'),
-};
 
 const F = {
   medium: 'Inter_500Medium',
@@ -30,14 +23,12 @@ type TabId = 'home' | 'radar' | 'docs' | 'focus';
 const TAB_ITEMS: {
   id: TabId;
   label: string;
-  icon: ImageSourcePropType;
-  width: number;
-  height: number;
+  Icon: ComponentType<LucideProps>;
 }[] = [
-  { id: 'home', label: 'Trang chủ', icon: icons.home, width: 18, height: 17.5 },
-  { id: 'radar', label: 'Radar', icon: icons.radar, width: 20.5, height: 21 },
-  { id: 'docs', label: 'Tài liệu', icon: icons.docs, width: 17.5, height: 21 },
-  { id: 'focus', label: 'Tập trung', icon: icons.focus, width: 17, height: 20 },
+  { id: 'home', label: 'Trang chủ', Icon: Home },
+  { id: 'radar', label: 'Radar', Icon: Radio },
+  { id: 'docs', label: 'Tài liệu', Icon: BookOpen },
+  { id: 'focus', label: 'Tập trung', Icon: Timer },
 ];
 
 export default function StudyHubTabBar({
@@ -55,6 +46,21 @@ export default function StudyHubTabBar({
   }, [active]);
 
   const selectTab = (id: TabId) => {
+    if (id === selected) return;
+    const TAB_ORDER: TabId[] = ['home', 'radar', 'docs', 'focus'];
+    const curIdx = TAB_ORDER.indexOf(selected);
+    const targetIdx = TAB_ORDER.indexOf(id);
+    const isBack = targetIdx < curIdx;
+
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      const target = document.querySelector('[data-testid="screen-stage"]') as HTMLElement | null;
+      if (target) {
+        target.classList.remove('vku-screen-enter-forward', 'vku-screen-enter-back');
+        void target.offsetWidth;
+        target.classList.add(isBack ? 'vku-screen-enter-back' : 'vku-screen-enter-forward');
+      }
+    }
+
     setSelected(id);
     const routes = {
       home: '/home',
@@ -85,7 +91,7 @@ export default function StudyHubTabBar({
           style={s.fab}
           onPress={() => router.push('/add-document' as any)}
         >
-          <Image source={icons.plus} style={{ width: z(19), height: z(19) }} />
+          <Plus size={z(22)} color="#FFFFFF" strokeWidth={2.5} />
         </TemoPressable>
       </View>
       {TAB_ITEMS.slice(2).map((item) => (
@@ -169,6 +175,8 @@ function TabBarItem({
     }).start();
   };
 
+  const Icon = item.Icon;
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -181,13 +189,10 @@ function TabBarItem({
     >
       <Animated.View style={[{ width: '100%', height: '100%', alignItems: 'center' }, { transform: [{ scale }] }]}>
         <Animated.View style={[s.tabIconBox, { transform: [{ scale: iconBounce }] }]}>
-          <Image
-            source={item.icon}
-            style={{
-              width: z(item.width),
-              height: z(item.height),
-              tintColor: active ? C.primary : C.muted,
-            }}
+          <Icon
+            size={z(20)}
+            color={active ? C.primary : C.muted}
+            strokeWidth={active ? 2.3 : 1.9}
           />
         </Animated.View>
         <Text style={[s.tabLabel, active ? s.tabLabelOn : s.tabLabelOff]}>

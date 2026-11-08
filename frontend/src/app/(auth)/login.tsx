@@ -78,13 +78,35 @@ export default function LoginScreen() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const scriptId = 'google-gsi-client';
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+    }
+  }, []);
 
-  const handleGoogleLogin = async () => {
+  const proceedFallbackLogin = async (rawAcc: string) => {
     try {
       showLoading('Đang kết nối tài khoản Google VKU...');
-      const targetEmail = account.trim().toLowerCase().endsWith('@vku.udn.vn')
-        ? account.trim().toLowerCase()
-        : 'hoangnq.23itb@vku.udn.vn';
+      let targetEmail = rawAcc;
+      if (!targetEmail) {
+        targetEmail = 'hoangnq.23itb@vku.udn.vn';
+      } else if (!targetEmail.includes('@')) {
+        targetEmail = `${targetEmail}@vku.udn.vn`;
+      }
+
+      if (!targetEmail.endsWith('@vku.udn.vn')) {
+        hideLoading();
+        showError('Từ chối truy cập', 'Chỉ chấp nhận tài khoản Google sinh viên VKU có đuôi @vku.udn.vn!');
+        return;
+      }
 
       const res = await authService.loginWithGoogle({
         email: targetEmail,
@@ -102,6 +124,72 @@ export default function LoginScreen() {
       hideLoading();
       showError('Đăng nhập Google thất bại', err.message || 'Chỉ chấp nhận tài khoản Google sinh viên VKU (@vku.udn.vn).');
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    const rawAcc = account.trim().toLowerCase();
+
+    // Kiểm tra định dạng nếu người dùng tự nhập email khác đuôi @vku.udn.vn
+    if (rawAcc.includes('@') && !rawAcc.endsWith('@vku.udn.vn')) {
+      showError(
+        'Từ chối truy cập',
+        'Chỉ tài khoản Google sinh viên/cán bộ VKU (@vku.udn.vn) mới được phép đăng nhập vào hệ thống!'
+      );
+      return;
+    }
+
+    // Trên nền tảng Web: Kích hoạt Google Identity Services OAuth Popup
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      try {
+        showLoading('Đang mở cổng xác thực Google VKU...');
+        (window as any).google.accounts.id.initialize({
+          client_id: '404919884065-kgl77t0ilvu9034lie0grgqhqs17hmlq.apps.googleusercontent.com',
+          hosted_domain: 'vku.udn.vn',
+          callback: async (credentialResponse: any) => {
+            if (!credentialResponse?.credential) {
+              proceedFallbackLogin(rawAcc);
+              return;
+            }
+            try {
+              const base64Url = credentialResponse.credential.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+              const payload = JSON.parse(jsonPayload);
+
+              if (!payload.email || !payload.email.toLowerCase().endsWith('@vku.udn.vn')) {
+                hideLoading();
+                showError('Từ chối truy cập', 'Tài khoản Google đã chọn không thuộc miền @vku.udn.vn!');
+                return;
+              }
+
+              const res = await authService.loginWithGoogle({
+                email: payload.email,
+                idToken: credentialResponse.credential,
+                fullName: payload.name,
+                avatarUrl: payload.picture
+              });
+              hideLoading();
+              showSuccess('Đăng nhập thành công', `Chào mừng ${res.user?.fullName || payload.name} đến với VKU StudyHub!`);
+              setTimeout(() => router.replace('/home' as any), 500);
+            } catch (err: any) {
+              hideLoading();
+              showError('Lỗi đăng nhập', err.message || 'Không thể xác thực tài khoản Google với máy chủ VKU.');
+            }
+          }
+        });
+
+        (window as any).google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            proceedFallbackLogin(rawAcc);
+          }
+        });
+        return;
+      } catch {
+        // Fallback
+      }
+    }
+
+    proceedFallbackLogin(rawAcc);
   };
 
   const handleLogin = async () => {

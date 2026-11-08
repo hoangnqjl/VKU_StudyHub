@@ -18,13 +18,86 @@ class PomodoroService {
   // In-memory fallback and fast-access cache
 
 
-  private rooms: PomodoroRoom[] = [];
+    private static readonly DEFAULT_ROOMS: PomodoroRoom[] = [
+    {
+      id: 'leetcode',
+      title: 'Cày LeetCode & DSA',
+      courseCode: 'VKU-A08',
+      courseName: 'Cấu trúc dữ liệu & Giải thuật',
+      hostId: 'usr_01',
+      hostName: 'Nguyễn Quang Hoàng',
+      focusDurationMinutes: 25,
+      breakDurationMinutes: 5,
+      currentMode: 'FOCUS',
+      status: 'RUNNING',
+      remainingSeconds: 1500,
+      startedAt: new Date().toISOString(),
+      participants: [
+        { userId: 'usr_01', fullName: 'Nguyễn Quang Hoàng', isHost: true, joinedAt: new Date().toISOString() }
+      ],
+      messages: [],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'uiux',
+      title: 'Sprint Đồ án UI/UX VKU',
+      courseCode: 'VKU-U12',
+      courseName: 'Thiết kế giao diện UI/UX',
+      hostId: 'usr_02',
+      hostName: 'Trần Thị Mai',
+      focusDurationMinutes: 25,
+      breakDurationMinutes: 5,
+      currentMode: 'FOCUS',
+      status: 'RUNNING',
+      remainingSeconds: 1500,
+      startedAt: new Date().toISOString(),
+      participants: [],
+      messages: [],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'toeic',
+      title: 'Góc luyện TOEIC 750+',
+      courseCode: 'VKU-E05',
+      courseName: 'Tiếng Anh chuyên ngành',
+      hostId: 'usr_03',
+      hostName: 'Lê Hoàng Nam',
+      focusDurationMinutes: 25,
+      breakDurationMinutes: 5,
+      currentMode: 'FOCUS',
+      status: 'RUNNING',
+      remainingSeconds: 1500,
+      startedAt: new Date().toISOString(),
+      participants: [],
+      messages: [],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'math',
+      title: 'Toán rời rạc & Giải thuật',
+      courseCode: 'VKU-M03',
+      courseName: 'Toán rời rạc',
+      hostId: 'usr_04',
+      hostName: 'Phạm Minh Đức',
+      focusDurationMinutes: 25,
+      breakDurationMinutes: 5,
+      currentMode: 'FOCUS',
+      status: 'RUNNING',
+      remainingSeconds: 1500,
+      startedAt: new Date().toISOString(),
+      participants: [],
+      messages: [],
+      createdAt: new Date().toISOString()
+    }
+  ];
+
+  private rooms: PomodoroRoom[] = [...PomodoroService.DEFAULT_ROOMS];
 
   /**
    * Lấy danh sách tất cả phòng học Pomodoro
    */
   constructor() {
-    setTimeout(() => {
+        setTimeout(() => {
       for (const r of this.rooms) {
         if (r.status === 'RUNNING') {
           console.log('⏱️ [PomodoroService] Starting ticker for live room: ' + r.id);
@@ -32,6 +105,19 @@ class PomodoroService {
         }
       }
     }, 1000);
+
+    // Tự động dọn dẹp các phòng người dùng tạo khi đã hoàn thành hoặc hết thời gian
+    setInterval(() => {
+      const defaultIds = ['leetcode', 'uiux', 'toeic', 'math'];
+      for (const r of [...this.rooms]) {
+        if (!defaultIds.includes(r.id)) {
+          if (r.status === 'COMPLETED' || (r.status === 'RUNNING' && r.remainingSeconds <= 0)) {
+            console.log('🧹 [PomodoroService] Auto-closing expired user room: ' + r.id);
+            this.closeRoom(r.id).catch(() => {});
+          }
+        }
+      }
+    }, 15000);
   }
 
   public async getRooms(courseCode?: string): Promise<PomodoroRoom[]> {
@@ -95,9 +181,15 @@ class PomodoroService {
   /**
    * Lấy chi tiết phòng học Pomodoro theo ID
    */
-  public async getRoomById(id: string): Promise<PomodoroRoom> {
+    public async getRoomById(id: string): Promise<PomodoroRoom> {
     const room = this.rooms.find((r) => r.id === id);
     if (!room) {
+      const defaultMatch = PomodoroService.DEFAULT_ROOMS.find((r) => r.id === id);
+      if (defaultMatch) {
+        const cloned = JSON.parse(JSON.stringify(defaultMatch));
+        this.rooms.unshift(cloned);
+        return cloned;
+      }
       // Check database
       try {
         const [rows]: any = await dbPool.query(
@@ -230,12 +322,25 @@ class PomodoroService {
   /**
    * Tham gia vào phòng học Pomodoro
    */
-  public async joinRoom(
+    public async joinRoom(
     roomId: string,
     user: { id: string; fullName?: string; avatarUrl?: string },
     socketId?: string
   ): Promise<PomodoroRoom> {
     const room = await this.getRoomById(roomId);
+
+    if (!user.avatarUrl) {
+      try {
+        const [uRows]: any = await dbPool.query(
+          `SELECT avatar_url, full_name FROM users WHERE id = ? LIMIT 1`,
+          [user.id]
+        );
+        if (uRows && uRows.length > 0) {
+          if (uRows[0].avatar_url) user.avatarUrl = uRows[0].avatar_url;
+          if (!user.fullName && uRows[0].full_name) user.fullName = uRows[0].full_name;
+        }
+      } catch {}
+    }
 
     let participant = room.participants.find((p) => p.userId === user.id);
     if (!participant) {
@@ -357,12 +462,17 @@ class PomodoroService {
   /**
    * Đóng và kết thúc phòng học Pomodoro
    */
-  public async closeRoom(roomId: string, userId?: string): Promise<boolean> {
+    public async closeRoom(roomId: string, userId?: string): Promise<boolean> {
     const roomIndex = this.rooms.findIndex((r) => r.id === roomId);
     if (roomIndex !== -1) {
       this.stopTimerTicker(roomId);
       this.rooms.splice(roomIndex, 1);
     }
+
+    emitToRoom(roomId, 'pomodoro:room_closed', {
+      roomId,
+      message: 'Phòng học đã được kết thúc thành công.'
+    });
 
     try {
       await dbPool.query('DELETE FROM pomodoro_participants WHERE room_id = ?', [roomId]);
@@ -501,8 +611,27 @@ class PomodoroService {
         status: room.status,
         serverTime: new Date().toISOString()
       });
-    } else {
-      // Session finished! Handle phase shift
+        } else {
+      // Session finished! Handle phase shift or auto-close for custom rooms
+      const isDefault = ['leetcode', 'uiux', 'toeic', 'math'].includes(roomId);
+      if (!isDefault) {
+        room.status = 'COMPLETED';
+        room.remainingSeconds = 0;
+        this.stopTimerTicker(roomId);
+        emitToRoom(roomId, POMODORO_SOCKET_EVENTS.ROOM_STATE, {
+          room,
+          message: 'Phiên học Pomodoro đã hoàn thành! Phòng học tự động đóng.'
+        });
+        emitToRoom(roomId, 'pomodoro:room_closed', {
+          roomId,
+          message: 'Phiên học Pomodoro đã hoàn thành! Phòng học tự động đóng.'
+        });
+        setTimeout(() => {
+          this.closeRoom(roomId).catch(() => {});
+        }, 2000);
+        dbPool.query('UPDATE pomodoro_rooms SET status = ?, remaining_seconds = 0 WHERE id = ?', ['COMPLETED', roomId]).catch(() => {});
+        return;
+      }
       if (room.currentMode === 'FOCUS') {
         // Transition from FOCUS to SHORT_BREAK
         room.currentMode = 'SHORT_BREAK';

@@ -1,5 +1,5 @@
 import DropdownMenu, { DropdownMenuItem } from '../../components/DropdownMenu';
-import { Feather } from '@expo/vector-icons';
+import { ChevronDown } from '../../components/DynamicLucideIcon';
 import { safeBack } from '../../utils/navigation';
 import { useState } from 'react';
 import {
@@ -113,7 +113,7 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-    const handleGoogleRegister = async () => {
+  const handleGoogleRegister = async () => {
     try {
       showLoading('Đang kết nối VKU Google...');
       const targetEmail = email.trim().toLowerCase().endsWith('@vku.udn.vn')
@@ -269,7 +269,7 @@ export default function RegisterScreen() {
                 <Image source={IMG.cap} style={{ width: z(20.5), height: z(17) }} />
               </View>
               <Text style={s.selectText}>Khóa học</Text>
-              <Feather name="chevron-down" size={z(16)} color="#94A3B8" />
+              <ChevronDown size={z(16)} color="#94A3B8" strokeWidth={2} />
             </Pressable>
           </View>
 

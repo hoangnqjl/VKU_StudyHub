@@ -3,7 +3,30 @@ import { useState, useEffect } from 'react';
 import { authService, documentService } from '../services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAlert } from '../components/AlertContext';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, {
+  ChevronLeft,
+  Settings,
+  Pencil,
+  BookOpen,
+  Plus,
+  Check,
+  Target,
+  Trophy,
+  GraduationCap,
+  Layers,
+  SlidersHorizontal,
+  Eye,
+  LayoutGrid,
+  MoreVertical,
+  FileText,
+  RotateCcw,
+  Upload,
+  PlusCircle,
+  Trash2,
+  X,
+  Award,
+  Zap,
+} from '../components/DynamicLucideIcon';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -134,6 +157,7 @@ export default function ProfileScreen() {
   const [profileData, setProfileData] = useState<any>(null);
   const [myDocsCount, setMyDocsCount] = useState<number>(0);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState(false);
   const [myDocs, setMyDocs] = useState<any[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<DocumentViewerItem | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -318,7 +342,7 @@ export default function ProfileScreen() {
         {/* ===== Header ===== */}
         <View style={s.header}>
           <Pressable style={s.circleBtn} onPress={goBack}>
-            <Image source={IMG.back} style={{ width: z(9), height: z(12.5) }} />
+            <ChevronLeft size={z(20)} color={C.primary} strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle}>Hồ sơ sinh viên</Text>
           <Pressable
@@ -327,14 +351,14 @@ export default function ProfileScreen() {
             onPress={() => router.push('/app-settings' as any)}
             style={s.circleBtn}
           >
-            <Image source={IMG.gear} style={{ width: z(19), height: z(21) }} />
+            <Settings size={z(20)} color={C.primary} strokeWidth={2} />
           </Pressable>
         </View>
 
         {/* ===== Thẻ thông tin ===== */}
         <View style={[s.card, s.profileCard]}>
           <View style={s.avatarBox}>
-            <Image source={(profileData?.avatarUrl || customAvatar) ? { uri: profileData?.avatarUrl || customAvatar } : IMG.avatar} style={[s.avatar, { borderRadius: 33 }]} />
+            <Image source={(!avatarError && (profileData?.avatarUrl || customAvatar) && !(profileData?.avatarUrl || customAvatar).includes('avatar_usr_01_default.png')) ? { uri: profileData?.avatarUrl || customAvatar } : IMG.avatar} onError={() => setAvatarError(true)} style={[s.avatar, { borderRadius: 33 }]} />
           </View>
           <View style={s.profileText}>
             <Text style={s.name}>{profileData?.fullName || 'Nguyễn Quang Hoàng'}</Text>
@@ -342,7 +366,7 @@ export default function ProfileScreen() {
             <Text style={s.faculty}>{profileData?.major || profileData?.faculty || 'Khoa Công nghệ Thông tin'}</Text>
           </View>
           <Pressable style={s.editBtn} onPress={() => router.push('/edit-profile' as any)}>
-            <Image source={IMG.pencil} style={{ width: z(14), height: z(14) }} />
+            <Pencil size={z(14)} color={C.primary} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -350,7 +374,7 @@ export default function ProfileScreen() {
         <View style={[s.card, s.sectionCard]}>
           <View style={s.sectionHeader}>
             <View style={[s.iconCircle, { backgroundColor: C.blue }]}>
-              <Image source={IMG.book} style={{ width: z(13), height: z(11.5) }} />
+              <BookOpen size={z(14)} color={C.primary} strokeWidth={2} />
             </View>
             <View style={s.sectionText}>
               <Text style={s.sectionTitle}>Môn đang học trong kỳ</Text>
@@ -362,7 +386,7 @@ export default function ProfileScreen() {
               style={s.addBtn}
               onPress={() => setShowAddCourseModal(true)}
             >
-              <Image source={IMG.plusWhite} style={{ width: z(8), height: z(8.5) }} />
+              <Plus size={z(11)} color="#FFFFFF" strokeWidth={2.5} />
               <Text style={s.addText}>Thêm</Text>
             </Pressable>
           </View>
@@ -382,10 +406,11 @@ export default function ProfileScreen() {
                   <Text style={[s.chipText, on ? s.chipTextOn : s.chipTextOff]}>
                     {name}
                   </Text>
-                  <Image
-                    source={on ? IMG.check : IMG.plusGray}
-                    style={on ? s.checkIcon : s.plusIcon}
-                  />
+                  {on ? (
+                    <Check size={z(12)} color={C.primary} strokeWidth={2.8} style={{ marginLeft: 8 }} />
+                  ) : (
+                    <Plus size={z(11)} color={C.muted} strokeWidth={2.2} style={{ marginLeft: 8 }} />
+                  )}
                 </Pressable>
               );
             })}
@@ -396,7 +421,7 @@ export default function ProfileScreen() {
         <View style={[s.card, s.sectionCard]}>
           <View style={s.sectionHeader}>
             <View style={[s.iconCircle, { backgroundColor: C.cream }]}>
-              <Image source={IMG.target} style={{ width: z(15), height: z(15) }} />
+              <Target size={z(16)} color="#F15B2A" strokeWidth={2} />
             </View>
             <View style={s.sectionText}>
               <Text style={s.sectionTitle}>Mục tiêu học tập</Text>
@@ -408,7 +433,7 @@ export default function ProfileScreen() {
               style={s.addBtn}
               onPress={() => setShowAddGoalModal(true)}
             >
-              <Image source={IMG.plusWhite} style={{ width: z(8), height: z(8.5) }} />
+              <Plus size={z(11)} color="#FFFFFF" strokeWidth={2.5} />
               <Text style={s.addText}>Thêm</Text>
             </Pressable>
           </View>
@@ -432,13 +457,13 @@ export default function ProfileScreen() {
                     ]}
                   >
                     {g.iconType === 'trophy' ? (
-                      <Image source={IMG.trophy} style={{ width: z(13), height: z(12) }} />
+                      <Trophy size={z(14)} color={active ? '#F15B2A' : C.primary} strokeWidth={2} />
                     ) : g.iconType === 'cap' ? (
-                      <Image source={IMG.cap} style={{ width: z(13), height: z(11) }} />
+                      <GraduationCap size={z(14)} color={active ? '#F15B2A' : C.primary} strokeWidth={2} />
                     ) : g.iconType === 'layers' ? (
-                      <Image source={IMG.layers} style={{ width: z(15), height: z(14) }} />
+                      <Layers size={z(14)} color={active ? '#F15B2A' : C.primary} strokeWidth={2} />
                     ) : (
-                      <Feather name="target" size={z(15)} color={active ? '#F15B2A' : C.primary} />
+                      <Target size={z(15)} color={active ? '#F15B2A' : C.primary} strokeWidth={2} />
                     )}
                   </View>
                   <View style={s.goalText}>
@@ -458,7 +483,7 @@ export default function ProfileScreen() {
                       }}
                       style={{ padding: 6, marginRight: 6 }}
                     >
-                      <Feather name="trash-2" size={z(15)} color="#D14343" />
+                      <Trash2 size={z(15)} color="#D14343" strokeWidth={2} />
                     </Pressable>
                   )}
                   <View style={[s.radio, active && { borderColor: C.primary }]}>
@@ -486,7 +511,7 @@ export default function ProfileScreen() {
             style={[s.filterBtn, selectedFormat !== 'all' && { backgroundColor: '#EEF2FF', borderWidth: 1, borderColor: '#374F8A' }]}
             onPress={() => setFormatDropdownOpen(true)}
           >
-            <Image source={IMG.filter} style={{ width: z(10), height: z(8) }} />
+            <SlidersHorizontal size={z(13)} color={C.muted} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -509,8 +534,8 @@ export default function ProfileScreen() {
                         { backgroundColor: isPdf ? '#FEE2E2' : isDocx ? '#DBEAFE' : isXls ? '#D1FAE5' : '#FFEDD5' },
                       ]}
                     >
-                      <Feather
-                        name={isPdf ? 'file-text' : isDocx ? 'file-text' : isXls ? 'grid' : 'file'}
+                      <LucideIcon
+                        name={isPdf ? 'file-text' : isDocx ? 'file-text' : isXls ? 'layout-grid' : 'file'}
                         size={z(19)}
                         color={isPdf ? '#DC2626' : isDocx ? '#1D4ED8' : isXls ? '#059669' : '#EA580C'}
                       />
@@ -531,7 +556,7 @@ export default function ProfileScreen() {
                           setViewerVisible(true);
                         }}
                       >
-                        <Feather name="eye" size={z(14)} color="#101D83" />
+                        <Eye size={z(14)} color="#101D83" strokeWidth={2} />
                         <Text style={s.myDocOpenText}>Mở</Text>
                       </TemoPressable>
 
@@ -544,7 +569,7 @@ export default function ProfileScreen() {
                           } as any)
                         }
                       >
-                        <Feather name="grid" size={z(15)} color="#475569" />
+                        <LayoutGrid size={z(15)} color="#475569" strokeWidth={2} />
                       </TemoPressable>
 
                       <TemoPressable
@@ -552,7 +577,7 @@ export default function ProfileScreen() {
                         accessibilityLabel={`Tùy chọn ${doc.title}`}
                         onPress={() => setSelectedDocForAction(doc)}
                       >
-                        <Feather name="more-vertical" size={z(16)} color="#475569" />
+                        <MoreVertical size={z(16)} color="#475569" strokeWidth={2} />
                       </TemoPressable>
                     </View>
                   </View>
@@ -561,7 +586,7 @@ export default function ProfileScreen() {
             })
           ) : (
             <View style={s.emptyDocCard}>
-              <Feather name="file-text" size={z(28)} color={C.muted} />
+              <FileText size={z(28)} color={C.muted} strokeWidth={1.8} />
               <Text style={s.emptyDocTitle}>
                 {selectedFormat !== 'all' ? `Không có tệp ${selectedFormat.toUpperCase()}` : 'Chưa có tài liệu trong kho'}
               </Text>
@@ -573,7 +598,7 @@ export default function ProfileScreen() {
                   style={s.uploadDocBtn}
                   onPress={() => setSelectedFormat('all')}
                 >
-                  <Feather name="rotate-ccw" size={z(14)} color="#FFFFFF" />
+                  <RotateCcw size={z(14)} color="#FFFFFF" strokeWidth={2.2} />
                   <Text style={s.uploadDocBtnText}>Xem tất cả định dạng</Text>
                 </TemoPressable>
               ) : (
@@ -581,7 +606,7 @@ export default function ProfileScreen() {
                   style={s.uploadDocBtn}
                   onPress={() => router.push('/add-document' as any)}
                 >
-                  <Feather name="upload" size={z(14)} color="#FFFFFF" />
+                  <Upload size={z(14)} color="#FFFFFF" strokeWidth={2.2} />
                   <Text style={s.uploadDocBtnText}>Đăng tải tài liệu mới</Text>
                 </TemoPressable>
               )}
@@ -593,8 +618,8 @@ export default function ProfileScreen() {
               style={s.addMoreDocBtn}
               onPress={() => router.push('/add-document' as any)}
             >
-              <Feather name="plus-circle" size={z(15)} color={C.primary} />
-              <Text style={s.addMoreDocText}>+ Đăng tải thêm tài liệu khác</Text>
+              <PlusCircle size={z(15)} color={C.primary} strokeWidth={2} />
+              <Text style={s.addMoreDocText}>Đăng tải thêm tài liệu khác</Text>
             </TemoPressable>
           )}
         </View>
@@ -615,7 +640,7 @@ export default function ProfileScreen() {
           <View style={s.modalContainer}>
             <View style={s.modalHeader}>
               <View style={[s.iconCircle, { backgroundColor: C.cream }]}>
-                <Feather name="target" size={z(17)} color="#F15B2A" />
+                <Target size={z(17)} color="#F15B2A" strokeWidth={2} />
               </View>
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={s.modalTitle}>Tạo mục tiêu học tập mới</Text>
@@ -627,7 +652,7 @@ export default function ProfileScreen() {
                 onPress={() => setShowAddGoalModal(false)}
                 style={s.modalCloseBtn}
               >
-                <Feather name="x" size={z(18)} color={C.body} />
+                <X size={z(18)} color={C.body} strokeWidth={2} />
               </Pressable>
             </View>
 
@@ -693,10 +718,11 @@ export default function ProfileScreen() {
                       onPress={() => setNewGoalIcon(item.key)}
                       style={[s.iconOption, isSelected && s.iconOptionSelected]}
                     >
-                      <Feather
-                        name={item.icon as any}
+                      <LucideIcon
+                        name={item.icon}
                         size={z(15)}
                         color={isSelected ? C.white : C.primary}
+                        strokeWidth={2}
                       />
                       <Text style={[s.iconOptionText, isSelected && s.iconOptionTextSelected]}>
                         {item.label}
@@ -712,7 +738,7 @@ export default function ProfileScreen() {
                 <Text style={s.cancelBtnText}>Hủy</Text>
               </Pressable>
               <Pressable style={s.confirmBtn} onPress={handleCreateGoal}>
-                <Feather name="check" size={z(15)} color={C.white} />
+                <Check size={z(15)} color={C.white} strokeWidth={2.5} />
                 <Text style={s.confirmBtnText}>Lưu & Kích hoạt</Text>
               </Pressable>
             </View>
@@ -735,7 +761,7 @@ export default function ProfileScreen() {
           <View style={s.modalContainer}>
             <View style={s.modalHeader}>
               <View style={[s.iconCircle, { backgroundColor: C.blue }]}>
-                <Feather name="book" size={z(17)} color={C.primary} />
+                <BookOpen size={z(17)} color={C.primary} strokeWidth={2} />
               </View>
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={s.modalTitle}>Thêm môn học trong kỳ</Text>
@@ -747,7 +773,7 @@ export default function ProfileScreen() {
                 onPress={() => setShowAddCourseModal(false)}
                 style={s.modalCloseBtn}
               >
-                <Feather name="x" size={z(18)} color={C.body} />
+                <X size={z(18)} color={C.body} strokeWidth={2} />
               </Pressable>
             </View>
 
@@ -792,7 +818,7 @@ export default function ProfileScreen() {
                 <Text style={s.cancelBtnText}>Hủy</Text>
               </Pressable>
               <Pressable style={s.confirmBtn} onPress={handleAddCourse}>
-                <Feather name="plus" size={z(16)} color={C.white} />
+                <Plus size={z(16)} color={C.white} strokeWidth={2.5} />
                 <Text style={s.confirmBtnText}>Thêm môn học</Text>
               </Pressable>
             </View>
@@ -1451,7 +1477,7 @@ const raw = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 50,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     backgroundColor: '#F8FAFC',

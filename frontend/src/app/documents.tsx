@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { authService, documentService } from '../services';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DocumentViewerModal, { DocumentViewerItem } from '../components/DocumentViewerModal';
 import DropdownMenu, { DropdownMenuItem } from '../components/DropdownMenu';
 import { useAlert } from '../components/AlertContext';
@@ -16,7 +17,21 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, {
+  Bell,
+  Search,
+  SlidersHorizontal,
+  Cloud,
+  Check,
+  Upload,
+  QrCode,
+  ChevronDown,
+  Folder,
+  MoreVertical,
+  LayoutGrid,
+  Eye,
+  FileText,
+} from '../components/DynamicLucideIcon';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -27,8 +42,14 @@ import {
 } from '@expo-google-fonts/inter';
 
 import StudyHubTabBar from '../components/study-hub-tab-bar';
+import { useNotificationBadge } from '../utils/useNotificationBadge';
 import { useDesign } from '../components/design-scale';
 import { TemoStaggeredView, TemoPressable } from '../components/temoEffects';
+
+const IMG = {
+  logo: require('../../assets/images/vku-logo.png'),
+  avatar: require('../../assets/images/avatar.png'),
+};
 
 const COLORS = {
   navy: '#101D83',
@@ -71,6 +92,7 @@ const DOCUMENTS: any[] = [];
 type DocumentItem = (typeof DOCUMENTS)[number];
 
 export default function DocumentsScreen() {
+  const unreadCount = useNotificationBadge();
   const { s, z } = useDesign(raw);
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
@@ -93,6 +115,7 @@ export default function DocumentsScreen() {
   const [formatDropdownOpen, setFormatDropdownOpen] = useState(false);
   const [notice, setNotice] = useState('');
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [avatarError, setAvatarError] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<DocumentViewerItem | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
 
@@ -112,6 +135,11 @@ export default function DocumentsScreen() {
 
   useEffect(() => {
     authService.getCurrentUser().then(u => { if (u) setUserProfile(u); }).catch(() => { });
+    AsyncStorage.getItem('@vku_user_avatar').then(a => {
+      if (a && !a.includes('avatar_usr_01_default.png')) {
+        setUserProfile((prev: any) => ({ ...(prev || {}), avatarUrl: a }));
+      }
+    }).catch(() => {});
     Promise.all([
       documentService.getDocuments().catch(() => []),
       documentService.getSavedDocuments().catch(() => []),
@@ -196,6 +224,7 @@ export default function DocumentsScreen() {
       hideLoading();
       setApiDocs(prev => prev.filter(d => d.id !== targetDoc.id));
       setSavedDocs(prev => prev.filter(s => (s.document?.id || s.id) !== targetDoc.id));
+      documentService.getStorageUsage().then(usage => { if (usage) setStorageUsage(usage); }).catch(() => {});
       showSuccess('Đã xóa tài liệu', `Tài liệu "${targetDoc.title}" đã được xóa thành công.`);
     } catch (err: any) {
       hideLoading();
@@ -234,8 +263,8 @@ export default function DocumentsScreen() {
               onPress={() => router.push('/table-invitation' as any)}
               style={s.bellButton}
             >
-              <Feather name="bell" size={z(19)} color={COLORS.title} />
-              <View style={s.bellDot} />
+              <Bell size={z(20)} color={COLORS.title} strokeWidth={2} />
+              {unreadCount > 0 && <View style={s.bellDot} />}
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -243,13 +272,24 @@ export default function DocumentsScreen() {
               onPress={() => router.push('/profile' as any)}
               style={s.avatar}
             >
-              <Text style={s.avatarText}>{userProfile?.fullName ? userProfile.fullName.split(' ').slice(-1)[0].substring(0, 2).toUpperCase() : 'HQ'}</Text>
+              {!avatarError && userProfile?.avatarUrl ? (
+                <Image
+                  source={{ uri: userProfile.avatarUrl }}
+                  onError={() => setAvatarError(true)}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              ) : (
+                <Image
+                  source={IMG.avatar}
+                  style={{ width: 40, height: 40, borderRadius: 20 }}
+                />
+              )}
             </Pressable>
           </View>
         </View>
 
         <View style={s.searchBox}>
-          <Feather name="search" size={z(20)} color={COLORS.body} />
+          <Search size={z(19)} color={COLORS.body} strokeWidth={2} />
           <TextInput
             accessibilityLabel="Tìm trong tài liệu của tôi"
             value={query}
@@ -267,7 +307,7 @@ export default function DocumentsScreen() {
             hitSlop={8}
             style={selectedFormat !== 'all' ? { backgroundColor: '#EEF2FF', padding: 6, borderRadius: 8 } : undefined}
           >
-            <Feather name="sliders" size={z(19)} color={selectedFormat !== 'all' ? COLORS.navy : COLORS.body} />
+            <SlidersHorizontal size={z(18)} color={selectedFormat !== 'all' ? COLORS.navy : COLORS.body} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -302,9 +342,9 @@ export default function DocumentsScreen() {
         <View style={s.storageCard}>
           <View style={s.storageTop}>
             <View style={s.storageIcon}>
-              <Feather name="cloud" size={z(22)} color={COLORS.navy} />
+              <Cloud size={z(22)} color={COLORS.navy} strokeWidth={2} />
               <View style={s.storageCheck}>
-                <Feather name="check" size={z(8)} color={COLORS.white} />
+                <Check size={z(9)} color={COLORS.white} strokeWidth={3} />
               </View>
             </View>
             <View style={s.storageInfo}>
@@ -328,7 +368,7 @@ export default function DocumentsScreen() {
             containerStyle={{ flex: 1 }}
           >
             <View style={s.actionIcon}>
-              <Feather name="upload" size={z(20)} color={COLORS.navy} />
+              <Upload size={z(20)} color={COLORS.navy} strokeWidth={2} />
             </View>
             <View style={s.actionCopy}>
               <Text style={s.actionTitle}>Tải lên file</Text>
@@ -342,7 +382,7 @@ export default function DocumentsScreen() {
             containerStyle={{ flex: 1 }}
           >
             <View style={s.actionIcon}>
-              <Feather name="maximize" size={z(20)} color={COLORS.orange} />
+              <QrCode size={z(20)} color={COLORS.orange} strokeWidth={2} />
             </View>
             <View style={s.actionCopy}>
               <Text style={s.actionTitle}>Quét nhận QR</Text>
@@ -362,7 +402,7 @@ export default function DocumentsScreen() {
             <Text style={s.sortText}>
               {SORT_OPTIONS.find((o) => o.id === sortMode)?.label || 'Mới nhất'}
             </Text>
-            <Feather name="chevron-down" size={z(16)} color={COLORS.body} />
+            <ChevronDown size={z(16)} color={COLORS.body} strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -379,7 +419,7 @@ export default function DocumentsScreen() {
         {documents.length === 0 && (
           <View style={s.emptyState}>
             <View style={s.emptyIconCircle}>
-              <Feather name="folder" size={z(26)} color="#94A3B8" />
+              <Folder size={z(26)} color="#94A3B8" strokeWidth={2} />
             </View>
             <Text style={s.emptyTitle}>Chưa có tài liệu nào</Text>
             <Text style={s.emptyText}>Bấm nút "Tải lên file" ở trên để tải tài liệu vào kho học tập Cloudinary (1 GB/sinh viên).</Text>
@@ -500,7 +540,7 @@ function DocumentCard({
   return (
     <View style={s.documentCard}>
       <View style={[s.documentIcon, { backgroundColor: document.iconBg }]}>
-        <Feather name={document.icon} size={z(21)} color={document.tint} />
+        <LucideIcon name={document.icon} size={z(21)} color={document.tint} strokeWidth={2} />
       </View>
       <View style={s.documentBody}>
         <View style={s.documentHeading}>
@@ -511,7 +551,7 @@ function DocumentCard({
             onPress={onMore}
             style={s.moreButton}
           >
-            <Feather name="more-vertical" size={z(17)} color={COLORS.title} />
+            <MoreVertical size={z(17)} color={COLORS.title} strokeWidth={2} />
           </Pressable>
         </View>
         <View style={s.metadataRow}>
@@ -532,7 +572,7 @@ function DocumentCard({
             onPress={onCreateQr}
             style={s.qrButton}
           >
-            <Feather name="grid" size={z(16)} color={COLORS.title} />
+            <LayoutGrid size={z(16)} color={COLORS.title} strokeWidth={2} />
             <Text style={s.qrButtonText}>Tạo QR</Text>
           </TemoPressable>
           <TemoPressable
@@ -540,7 +580,7 @@ function DocumentCard({
             onPress={onOpen}
             style={s.openButton}
           >
-            <Feather name="eye" size={z(17)} color={COLORS.white} />
+            <Eye size={z(17)} color={COLORS.white} strokeWidth={2} />
             <Text style={s.openButtonText}>Mở</Text>
           </TemoPressable>
         </View>
@@ -601,9 +641,10 @@ const raw = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.brand,
+    backgroundColor: '#E2E8F0',
   },
   avatarText: { fontFamily: FONT.bold, fontSize: 12, lineHeight: 17, color: COLORS.white },
   searchBox: {
@@ -625,6 +666,9 @@ const raw = StyleSheet.create({
     fontFamily: FONT.regular,
     fontSize: 13,
     color: COLORS.title,
+    ...Platform.select({
+      web: { outlineStyle: 'none' as any },
+    }),
   },
   filterScroll: { marginTop: 16, marginHorizontal: -18 },
   filterRow: { paddingHorizontal: 18, gap: 8 },
@@ -771,7 +815,7 @@ const raw = StyleSheet.create({
     backgroundColor: COLORS.pale,
   },
   subjectText: { fontFamily: FONT.semi, fontSize: 10, lineHeight: 14, color: COLORS.navy },
-  formatPill: { minHeight: 22, paddingHorizontal: 7, borderRadius: 5, justifyContent: 'center', backgroundColor: '#FFE0D5' },
+  formatPill: { minHeight: 22, paddingHorizontal: 9, borderRadius: 50, justifyContent: 'center', backgroundColor: '#FFE0D5' },
   formatText: { fontFamily: FONT.bold, fontSize: 10, lineHeight: 14, color: '#B83B09' },
   pdfPill: { backgroundColor: '#FFE0DD' },
   pdfText: { color: COLORS.red },

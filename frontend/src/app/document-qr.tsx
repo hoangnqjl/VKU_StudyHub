@@ -3,7 +3,15 @@ import { useState, useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+  FileText,
+  Loader2,
+  CheckCircle,
+  SlidersHorizontal,
+  Download,
+  Copy,
+} from '../components/DynamicLucideIcon';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import {
@@ -98,10 +106,10 @@ export default function DocumentQrScreen() {
           if (res?.qrUrl) {
             setQrValue(res.qrUrl);
           } else {
-            setQrValue(`vkuapp://document-qr?document=${docIdToUse}`);
+            setQrValue(`vkuapp://document-qr?token=${docIdToUse}&id=${docIdToUse}`);
           }
         }).catch(() => {
-          setQrValue(`vkuapp://document-qr?document=${docIdToUse}`);
+          setQrValue(`vkuapp://document-qr?token=${docIdToUse}&id=${docIdToUse}`);
         });
       }
     }
@@ -116,12 +124,12 @@ export default function DocumentQrScreen() {
       const targetId = activeDocId || params.docId;
       const tokenData = targetId ? await documentService.generateQRToken(targetId, allowOffline).catch(() => null) : null;
       hideLoading();
-      const linkToCopy = tokenData?.qrUrl || qrValue || (targetId ? `https://vku-studyhub.edu.vn/qr/${targetId}` : '');
+      const linkToCopy = tokenData?.qrUrl || qrValue || (targetId ? `vkuapp://document-qr?token=${targetId}&id=${targetId}` : '');
       if (linkToCopy) {
         await Clipboard.setStringAsync(linkToCopy);
         showSuccess(
           'Sao chép thành công',
-          'Đã sao chép liên kết chia sẻ tài liệu vào bộ nhớ tạm. Bạn bè có thể mở liên kết để nhận tài liệu ngay!'
+          'Đã sao chép liên kết chia sẻ tài liệu vào bộ nhớ tạm. Bạn bè có thể quét mã hoặc mở trực tiếp trên app VKU StudyHub!'
         );
       }
     } catch {
@@ -146,7 +154,7 @@ export default function DocumentQrScreen() {
             onPress={() => safeBack('/documents')}
             style={s.backButton}
           >
-            <Feather name="chevron-left" size={z(25)} color={COLORS.title} />
+            <ChevronLeft size={z(25)} color={COLORS.title} strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle}>Tạo mã QR tài liệu</Text>
           <View style={s.headerSpacer} />
@@ -155,7 +163,7 @@ export default function DocumentQrScreen() {
         <View style={s.qrCard}>
           <View style={s.documentPill}>
             <View style={s.documentIcon}>
-              <Feather name="file-text" size={z(26)} color={COLORS.orange} />
+              <FileText size={z(26)} color={COLORS.orange} strokeWidth={2} />
             </View>
             <View style={s.documentInfo}>
               <Text style={s.documentTitle} numberOfLines={1}>
@@ -186,7 +194,7 @@ export default function DocumentQrScreen() {
               />
             ) : (
               <View style={{ width: z(190), height: z(190), alignItems: 'center', justifyContent: 'center' }}>
-                <Feather name="loader" size={z(32)} color={COLORS.navy} />
+                <Loader2 size={z(32)} color={COLORS.navy} strokeWidth={2} />
                 <Text style={{ marginTop: 8, fontFamily: FONT.medium, fontSize: 12, color: COLORS.body }}>
                   Đang tạo mã QR...
                 </Text>
@@ -220,7 +228,7 @@ export default function DocumentQrScreen() {
               </>
             ) : (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
-                <Feather name="check-circle" size={z(18)} color={COLORS.navy} />
+                <CheckCircle size={z(18)} color={COLORS.navy} strokeWidth={2} />
                 <Text style={s.scannedText}>
                   Mã QR sẵn sàng chia sẻ tức thì qua radar phòng học VKU
                 </Text>
@@ -231,12 +239,12 @@ export default function DocumentQrScreen() {
 
         <View style={s.securityCard}>
           <View style={s.sectionHeading}>
-            <Feather name="sliders" size={z(19)} color={COLORS.navy} />
+            <SlidersHorizontal size={z(19)} color={COLORS.navy} strokeWidth={2} />
             <Text style={s.sectionTitle}>Cài đặt quyền truy cập &amp; bảo mật</Text>
           </View>
           <View style={s.accessRow}>
             <View style={s.downloadIcon}>
-              <Feather name="download" size={z(21)} color={COLORS.title} />
+              <Download size={z(21)} color={COLORS.title} strokeWidth={2} />
             </View>
             <View style={s.accessCopy}>
               <Text style={s.accessTitle}>Tải về offline &amp; Chỉnh sửa</Text>
@@ -261,7 +269,7 @@ export default function DocumentQrScreen() {
           onPress={copyLink}
           style={s.copyButton}
         >
-          <Feather name="copy" size={z(21)} color={COLORS.white} />
+          <Copy size={z(21)} color={COLORS.white} strokeWidth={2} />
           <Text style={s.copyText}>Sao chép liên kết chia sẻ</Text>
         </Pressable>
         {notice.length > 0 && (
@@ -343,9 +351,9 @@ const raw = StyleSheet.create({
   documentTitle: { fontFamily: FONT.bold, fontSize: 14, lineHeight: 20, color: COLORS.title },
   documentMeta: { marginTop: 4, flexDirection: 'row', alignItems: 'center' },
   pdfBadge: {
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     paddingVertical: 1,
-    borderRadius: 5,
+    borderRadius: 50,
     backgroundColor: '#FFE0DD',
   },
   pdfText: { fontFamily: FONT.bold, fontSize: 9.5, lineHeight: 14, color: '#C91F26' },

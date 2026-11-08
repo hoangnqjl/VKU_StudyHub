@@ -10,7 +10,15 @@ import {
   Linking,
   Dimensions,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, {
+  ArrowLeft,
+  LayoutGrid,
+  ExternalLink,
+  Download,
+  Eye,
+  BookOpen,
+  Info,
+} from './DynamicLucideIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlert } from './AlertContext';
 
@@ -412,8 +420,6 @@ export default function DocumentViewerModal({
   const rawUrl = document.fileUrl || '';
   let fileUrl = rawUrl;
   if (fileUrl.includes('cdn.vku.udn.vn')) {
-    fileUrl = fileUrl.replace('https://cdn.vku.udn.vn', 'http://localhost:5000');
-  } else if (fileUrl.includes('res.cloudinary.com') && fileUrl.includes('/documents/')) {
     const filename = fileUrl.split('/').pop();
     fileUrl = 'http://localhost:5000/uploads/documents/' + filename;
   }
@@ -476,7 +482,7 @@ export default function DocumentViewerModal({
               hitSlop={12}
               style={styles.closeBtn}
             >
-              <Feather name="arrow-left" size={20} color="#1E293B" />
+              <ArrowLeft size={20} color="#1E293B" strokeWidth={2.2} />
             </Pressable>
             <View style={[styles.formatBadge, { backgroundColor: meta.bg }]}>
               <Text style={[styles.formatText, { color: meta.color }]}>{meta.type}</Text>
@@ -502,7 +508,7 @@ export default function DocumentViewerModal({
                 }}
                 style={styles.actionIconBtn}
               >
-                <Feather name="grid" size={17} color="#1E293B" />
+                <LayoutGrid size={17} color="#1E293B" strokeWidth={2} />
               </Pressable>
             )}
 
@@ -512,7 +518,7 @@ export default function DocumentViewerModal({
               onPress={handleOpenExternal}
               style={styles.actionIconBtn}
             >
-              <Feather name="external-link" size={17} color="#1E293B" />
+              <ExternalLink size={17} color="#1E293B" strokeWidth={2} />
             </Pressable>
 
             <Pressable
@@ -521,69 +527,34 @@ export default function DocumentViewerModal({
               onPress={handleDownload}
               style={[styles.actionIconBtn, styles.downloadPillBtn]}
             >
-              <Feather name="download" size={16} color="#FFFFFF" />
+              <Download size={16} color="#FFFFFF" strokeWidth={2} />
               <Text style={styles.downloadPillText}>Tải về</Text>
             </Pressable>
           </View>
         </View>
 
-        {/* ===== SEGMENTED CONTROL TABS (2 TABS: COI TRỰC TIẾP & COI SỐ HÓA) ===== */}
-        <View style={styles.segmentedTabBar}>
-          <Pressable
-            onPress={() => setActiveTab('content')}
-            style={[styles.segmentBtn, activeTab === 'content' && styles.segmentBtnActive]}
-          >
-            <Feather
-              name="eye"
-              size={14}
-              color={activeTab === 'content' ? '#101D83' : '#64748B'}
-            />
-            <Text style={[styles.segmentText, activeTab === 'content' && styles.segmentTextActive]}>
-              Coi trực tiếp
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => setActiveTab('reader')}
-            style={[styles.segmentBtn, activeTab === 'reader' && styles.segmentBtnActive]}
-          >
-            <Feather
-              name="book-open"
-              size={14}
-              color={activeTab === 'reader' ? '#101D83' : '#64748B'}
-            />
-            <Text style={[styles.segmentText, activeTab === 'reader' && styles.segmentTextActive]}>
-              Coi số hóa
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* ===== NỘI DUNG CHÍNH THEO TAB ===== */}
+        {/* ===== NỘI DUNG CHÍNH (CHỈ COI TRỰC TIẾP) ===== */}
         <View style={styles.body}>
-          {/* TAB 1: XEM TỆP GỐC / DIRECT VIEWER */}
-          {activeTab === 'content' && (
-            <View style={styles.viewerWrapper}>
+          <View style={styles.viewerWrapper}>
+            {Platform.OS === 'web' && isDirectPdf ? (
+              <View style={styles.iframeFullContainer}>
+                <iframe
+                  src={fileUrl}
+                  title={document.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    backgroundColor: '#525659',
+                  }}
+                />
+              </View>
+            ) : (
               <ScrollView contentContainerStyle={styles.docPaperContainer} showsVerticalScrollIndicator={false}>
-                {Platform.OS === 'web' && isDirectPdf && (
-                  <View style={{ width: '100%', marginBottom: 16 }}>
-                    <iframe
-                      src={fileUrl}
-                      title={document.title}
-                      style={{
-                        width: '100%',
-                        height: 540,
-                        border: '1px solid #CBD5E1',
-                        borderRadius: 12,
-                        backgroundColor: '#525659',
-                      }}
-                    />
-                  </View>
-                )}
-                {/* Banner Tệp Trực Tiếp & Thao Tác Mở Tệp Gốc */}
                 <View style={styles.officeFileCard}>
                   <View style={styles.officeCardMain}>
                     <View style={[styles.officeLargeIconBox, { backgroundColor: meta.bg }]}>
-                      <Feather name={meta.icon} size={28} color={meta.color} />
+                      <LucideIcon name={meta.icon} size={28} color={meta.color} strokeWidth={2} />
                     </View>
                     <View style={styles.officeCardInfo}>
                       <Text style={styles.officeCardTitle} numberOfLines={1}>
@@ -600,335 +571,18 @@ export default function DocumentViewerModal({
 
                   <View style={styles.officeCardActions}>
                     <Pressable style={styles.officePrimaryBtn} onPress={handleOpenExternal}>
-                      <Feather name="external-link" size={15} color="#FFFFFF" />
+                      <ExternalLink size={15} color="#FFFFFF" strokeWidth={2} />
                       <Text style={styles.officePrimaryBtnText}>Mở tệp gốc toàn màn hình</Text>
                     </Pressable>
                     <Pressable style={styles.officeSecondaryBtn} onPress={handleDownload}>
-                      <Feather name="download" size={15} color="#101D83" />
+                      <Download size={15} color="#101D83" strokeWidth={2} />
                       <Text style={styles.officeSecondaryBtnText}>Tải tệp về máy</Text>
                     </Pressable>
                   </View>
                 </View>
-                  {/* Banner Tệp Office Chuyên Nghiệp */}
-                  <View style={styles.officeFileCard}>
-                    <View style={styles.officeCardMain}>
-                      <View style={[styles.officeLargeIconBox, { backgroundColor: meta.bg }]}>
-                        <Feather name={meta.icon} size={28} color={meta.color} />
-                      </View>
-                      <View style={styles.officeCardInfo}>
-                        <Text style={styles.officeCardTitle} numberOfLines={1}>
-                          {document.title}.{meta.type.toLowerCase()}
-                        </Text>
-                        <Text style={styles.officeCardMeta}>
-                          {meta.label} • Dung lượng: {document.size || '2.1 MB'}
-                        </Text>
-                        <Text style={styles.officeCardAuthor}>
-                          Biên soạn / Chia sẻ: {document.authorName || document.ownerName || 'Thành viên VKU'}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.officeCardActions}>
-                      <Pressable style={styles.officePrimaryBtn} onPress={handleDownload}>
-                        <Feather name="download" size={15} color="#FFFFFF" />
-                        <Text style={styles.officePrimaryBtnText}>Tải tệp gốc (.{meta.type.toLowerCase()})</Text>
-                      </Pressable>
-                      <Pressable style={styles.officeSecondaryBtn} onPress={handleOpenExternal}>
-                        <Feather name="external-link" size={15} color="#101D83" />
-                        <Text style={styles.officeSecondaryBtnText}>Mở trong tab mới</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-
-                  {/* Tờ giấy văn bản học liệu A4 chuẩn VKU */}
-                  <View style={styles.a4Sheet}>
-                    <View style={styles.a4Header}>
-                      <View style={styles.a4HeaderLeft}>
-                        <Text style={styles.a4School}>ĐẠI HỌC ĐÀ NẴNG</Text>
-                        <Text style={styles.a4Faculty}>TRƯỜNG ĐẠI HỌC CNTT & TT VIỆT - HÀN</Text>
-                        <View style={styles.a4Line} />
-                      </View>
-                      <View style={styles.a4HeaderRight}>
-                        <Text style={styles.a4DocType}>HỌC LIỆU SINH VIÊN</Text>
-                        <Text style={styles.a4DocCode}>Mã HP: {knowledge.courseCode}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.a4TitleBlock}>
-                      <Text style={styles.a4Title}>{document.title}</Text>
-                      <Text style={styles.a4SubTitle}>
-                        Học phần: {knowledge.formalSubject} • Học kỳ I
-                      </Text>
-                      <Text style={styles.a4Author}>
-                        Biên soạn / Chia sẻ: {document.authorName || document.ownerName || 'Cộng đồng học thuật VKU'}
-                      </Text>
-                    </View>
-
-                    <View style={styles.a4Body}>
-                      <Text style={styles.a4Heading}>I. MỤC TIÊU & CHUẨN ĐẦU RA (CLOs)</Text>
-                      {knowledge.clos.map((clo, idx) => (
-                        <Text key={idx} style={styles.a4Paragraph}>
-                          • {clo}
-                        </Text>
-                      ))}
-
-                      <Text style={[styles.a4Heading, { marginTop: 18 }]}>
-                        II. NỘI DUNG CHI TIẾT & CÂU HỎI TRỌNG TÂM
-                      </Text>
-                      {knowledge.questions.map((q, idx) => (
-                        <View key={idx} style={styles.a4QuestionBox}>
-                          <Text style={styles.a4QTitle}>{q.title}</Text>
-                          <Text style={styles.a4QBody}>{q.body}</Text>
-                        </View>
-                      ))}
-
-                      {knowledge.labCode && (
-                        <>
-                          <Text style={[styles.a4Heading, { marginTop: 18 }]}>
-                            III. NỘI DUNG THỰC HÀNH / LAB MẪU
-                          </Text>
-                          <View style={styles.a4CodeBox}>
-                            <Text style={styles.a4CodeTitle}>{knowledge.labCode.title}</Text>
-                            <Text style={styles.a4CodeText}>{knowledge.labCode.code}</Text>
-                          </View>
-                        </>
-                      )}
-                    </View>
-
-                    <View style={styles.a4Footer}>
-                      <Text style={styles.a4FooterText}>Xác thực lưu trữ bảo mật trên VKU StudyHub Cloud Storage</Text>
-                      <Text style={styles.a4FooterPage}>Trang 1 / 1 • Số hóa chính thức</Text>
-                    </View>
-                  </View>
-                </ScrollView>
-            </View>
-          )}
-
-          {/* TAB 2: ĐỌC SỐ HÓA / VKU READER (CLEAN NOTION/KINDLE STYLE) */}
-          {activeTab === 'reader' && (
-            <View
-              style={[
-                styles.readerContainer,
-                readerTheme === 'sepia' && styles.themeSepia,
-                readerTheme === 'dark' && styles.themeDark,
-              ]}
-            >
-              {/* Thanh điều khiển giao diện đọc sách */}
-              <View
-                style={[
-                  styles.readerControls,
-                  readerTheme === 'sepia' && styles.readerControlsSepia,
-                  readerTheme === 'dark' && styles.readerControlsDark,
-                ]}
-              >
-                <View style={styles.themeGroup}>
-                  <Pressable
-                    onPress={() => setReaderTheme('light')}
-                    style={[styles.themeBtn, readerTheme === 'light' && styles.themeBtnActive]}
-                  >
-                    <Text style={[styles.themeBtnText, readerTheme === 'light' && styles.themeBtnTextActive]}>
-                      Sáng
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setReaderTheme('sepia')}
-                    style={[styles.themeBtn, readerTheme === 'sepia' && styles.themeBtnActiveSepia]}
-                  >
-                    <Text style={[styles.themeBtnText, readerTheme === 'sepia' && { color: '#854D0E', fontWeight: 'bold' }]}>
-                      Dịu mắt
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setReaderTheme('dark')}
-                    style={[styles.themeBtn, readerTheme === 'dark' && styles.themeBtnActiveDark]}
-                  >
-                    <Text style={[styles.themeBtnText, readerTheme === 'dark' && { color: '#FFFFFF', fontWeight: 'bold' }]}>
-                      Đêm
-                    </Text>
-                  </Pressable>
-                </View>
-
-                <View style={styles.fontGroup}>
-                  <Pressable
-                    onPress={() => setFontSize((f) => Math.max(f - 1, 12))}
-                    style={[styles.fontBtn, readerTheme === 'dark' && styles.fontBtnDark]}
-                  >
-                    <Text style={[styles.fontBtnText, readerTheme === 'dark' && styles.textDark]}>A-</Text>
-                  </Pressable>
-                  <Text style={[styles.fontSizeDisplay, readerTheme === 'dark' && styles.textDarkMuted]}>
-                    {fontSize}px
-                  </Text>
-                  <Pressable
-                    onPress={() => setFontSize((f) => Math.min(f + 2, 22))}
-                    style={[styles.fontBtn, readerTheme === 'dark' && styles.fontBtnDark]}
-                  >
-                    <Text style={[styles.fontBtnText, readerTheme === 'dark' && styles.textDark]}>A+</Text>
-                  </Pressable>
-                </View>
-              </View>
-
-              {/* Nội dung bài học số hóa */}
-              <ScrollView contentContainerStyle={styles.readerScroll} showsVerticalScrollIndicator={false}>
-                <View style={styles.docHeaderArticle}>
-                  <Text
-                    style={[
-                      styles.docArticleTitle,
-                      { fontSize: fontSize + 9 },
-                      readerTheme === 'dark' && styles.textDark,
-                    ]}
-                  >
-                    {document.title}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.docArticleMeta,
-                      readerTheme === 'dark' && styles.textDarkMuted,
-                    ]}
-                  >
-                    Học phần: {knowledge.formalSubject} • Mã HP: {knowledge.courseCode} • Tác giả:{' '}
-                    {document.authorName || document.ownerName || 'Cộng đồng học tập VKU'}
-                  </Text>
-                </View>
-
-                {/* Phần 1: Mục tiêu học tập */}
-                <View style={styles.sectionBlock}>
-                  <Text
-                    style={[
-                      styles.sectionHeadingText,
-                      { fontSize: fontSize + 3 },
-                      readerTheme === 'dark' && styles.textDark,
-                    ]}
-                  >
-                    1. MỤC TIÊU & CHUẨN ĐẦU RA HỌC PHẦN
-                  </Text>
-                  {knowledge.clos.map((clo, idx) => (
-                    <View key={idx} style={styles.bulletItem}>
-                      <Text style={[styles.bulletDot, readerTheme === 'dark' && styles.textDark]}>•</Text>
-                      <Text
-                        style={[
-                          styles.bulletText,
-                          { fontSize, lineHeight: fontSize * 1.6 },
-                          readerTheme === 'dark' && styles.textDark,
-                        ]}
-                      >
-                        {clo}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Phần 2: Kiến thức lý thuyết cốt lõi */}
-                {knowledge.sections.map((sec, sIdx) => (
-                  <View key={sIdx} style={styles.sectionBlock}>
-                    <Text
-                      style={[
-                        styles.sectionHeadingText,
-                        { fontSize: fontSize + 3 },
-                        readerTheme === 'dark' && styles.textDark,
-                      ]}
-                    >
-                      {sec.heading}
-                    </Text>
-                    {sec.bullets.map((b, bIdx) => (
-                      <View key={bIdx} style={styles.bulletItem}>
-                        <Text style={[styles.bulletDot, readerTheme === 'dark' && styles.textDark]}>•</Text>
-                        <Text
-                          style={[
-                            styles.bulletText,
-                            { fontSize, lineHeight: fontSize * 1.6 },
-                            readerTheme === 'dark' && styles.textDark,
-                          ]}
-                        >
-                          <Text style={{ fontWeight: 'bold' }}>{b.label} </Text>
-                          {b.text}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ))}
-
-                {/* Phần 3: Lệnh Lab / Code mẫu thực hành */}
-                {knowledge.labCode && (
-                  <View style={[styles.codeBlock, readerTheme === 'dark' && styles.codeBlockDark]}>
-                    <Text style={styles.codeHeader}>{knowledge.labCode.title}</Text>
-                    <Text style={styles.codeContent}>{knowledge.labCode.code}</Text>
-                  </View>
-                )}
-
-                {/* Phần 4: Đề cương câu hỏi ôn thi */}
-                <View style={styles.sectionBlock}>
-                  <Text
-                    style={[
-                      styles.sectionHeadingText,
-                      { fontSize: fontSize + 3 },
-                      readerTheme === 'dark' && styles.textDark,
-                    ]}
-                  >
-                    3. CÂU HỎI TRỌNG TÂM & ÔN THI KẾT THÚC HỌC PHẦN
-                  </Text>
-                  {knowledge.questions.map((q, qIdx) => (
-                    <View
-                      key={qIdx}
-                      style={[
-                        styles.questionCardReader,
-                        readerTheme === 'sepia' && styles.qCardSepia,
-                        readerTheme === 'dark' && styles.qCardDark,
-                      ]}
-                    >
-                      <View style={styles.qHeader}>
-                        <Text style={[styles.qTitle, readerTheme === 'dark' && styles.textDark]}>
-                          {q.title}
-                        </Text>
-                        <View style={styles.qPointsBadge}>
-                          <Text style={styles.qPointsText}>{q.points}</Text>
-                        </View>
-                      </View>
-                      <Text
-                        style={[
-                          styles.qBody,
-                          { fontSize: fontSize - 0.5, lineHeight: (fontSize - 0.5) * 1.6 },
-                          readerTheme === 'dark' && styles.textDarkMuted,
-                        ]}
-                      >
-                        {q.body}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Phần 5: Lưu ý từ giảng viên */}
-                <View style={styles.sectionBlock}>
-                  <Text
-                    style={[
-                      styles.sectionHeadingText,
-                      { fontSize: fontSize + 3 },
-                      readerTheme === 'dark' && styles.textDark,
-                    ]}
-                  >
-                    4. GHI CHÚ ÔN TẬP TỪ GIẢNG VIÊN VKU
-                  </Text>
-                  <View
-                    style={[
-                      styles.noteCallout,
-                      readerTheme === 'sepia' && styles.noteCalloutSepia,
-                      readerTheme === 'dark' && styles.noteCalloutDark,
-                    ]}
-                  >
-                    <Feather name="info" size={18} color="#101D83" />
-                    <Text
-                      style={[
-                        styles.noteText,
-                        { fontSize, lineHeight: fontSize * 1.6 },
-                        readerTheme === 'dark' && styles.textDark,
-                      ]}
-                    >
-                      {knowledge.teacherNotes}
-                    </Text>
-                  </View>
-                </View>
               </ScrollView>
-            </View>
-          )}
+            )}
+          </View>
         </View>
       </View>
     </Modal>
@@ -1066,6 +720,11 @@ const styles = StyleSheet.create({
   viewerWrapper: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  iframeFullContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   docPaperContainer: {
     paddingVertical: 14,

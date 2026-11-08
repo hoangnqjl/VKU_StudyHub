@@ -9,14 +9,14 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import LucideIcon, { X, Check } from './DynamicLucideIcon';
 
 export interface DropdownMenuItem {
   id: string;
   label: string;
   sublabel?: string;
   badge?: string;
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: string;
   iconColor?: string;
   count?: number | string;
   danger?: boolean;
@@ -72,7 +72,7 @@ export default function DropdownMenu({
                   onPress={onClose}
                   style={styles.closeBtn}
                 >
-                  <Feather name="x" size={18} color="#64748B" />
+                  <X size={18} color="#64748B" strokeWidth={2} />
                 </Pressable>
               </View>
 
@@ -111,10 +111,11 @@ export default function DropdownMenu({
                             isDanger && styles.iconContainerDanger,
                           ]}
                         >
-                          <Feather
+                          <LucideIcon
                             name={item.icon}
                             size={18}
                             color={isDanger ? '#E11D48' : isSelected ? '#101D83' : item.iconColor || '#64748B'}
+                            strokeWidth={2}
                           />
                         </View>
                       )}
@@ -159,7 +160,7 @@ export default function DropdownMenu({
 
                       {isSelected ? (
                         <View style={styles.checkIconBox}>
-                          <Feather name="check" size={17} color="#101D83" />
+                          <Check size={17} color="#101D83" />
                         </View>
                       ) : null}
                     </Pressable>

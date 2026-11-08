@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Bookmark } from './DynamicLucideIcon';
 import { Pressable, StyleSheet } from 'react-native';
 
 type BookmarkButtonProps = {
@@ -28,11 +28,11 @@ export default function BookmarkButton({
         selected && styles.selectedButton,
       ]}
     >
-      <Feather
-        name="bookmark"
+      <Bookmark
         size={size * 0.44}
         color={iconColor}
         fill={selected ? iconColor : 'transparent'}
+        strokeWidth={2}
       />
     </Pressable>
   );

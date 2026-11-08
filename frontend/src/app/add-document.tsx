@@ -14,7 +14,15 @@ import { useAlert } from '../components/AlertContext';
 import { documentService, StorageUsage } from '../services/documentService';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+  Cloud,
+  UploadCloud,
+  Paperclip,
+  FileText,
+  CheckCircle,
+  X,
+} from '../components/DynamicLucideIcon';
 import * as DocumentPicker from 'expo-document-picker';
 import {
   Inter_400Regular,
@@ -245,7 +253,7 @@ export default function AddDocumentScreen() {
             onPress={() => safeBack('/documents')}
             style={s.backButton}
           >
-            <Feather name="chevron-left" size={z(25)} color={COLORS.title} />
+            <ChevronLeft size={z(25)} color={COLORS.title} strokeWidth={2.2} />
           </Pressable>
           <Text style={s.headerTitle}>Thêm tài liệu mới</Text>
           <View style={s.headerSpacer} />
@@ -258,7 +266,7 @@ export default function AddDocumentScreen() {
 
         <View style={s.storageQuotaBadge}>
           <View style={s.cloudIconWrap}>
-            <Feather name="cloud" size={z(16)} color={COLORS.navy} />
+            <Cloud size={z(16)} color={COLORS.navy} strokeWidth={2} />
           </View>
           <View style={s.storageQuotaTextContainer}>
             <Text style={s.storageQuotaTitle}>Lưu trữ đám mây Cloudinary (1 GB / sinh viên)</Text>
@@ -277,11 +285,11 @@ export default function AddDocumentScreen() {
           onPress={() => void chooseFile()}
           style={s.dropZone}
         >
-          <Feather name="upload-cloud" size={z(25)} color={COLORS.navy} />
+          <UploadCloud size={z(25)} color={COLORS.navy} strokeWidth={2} />
           <Text style={s.dropTitle}>{isPicking ? 'Đang mở tệp...' : 'Chạm hoặc kéo thả tệp'}</Text>
           <Text style={s.dropHint}>PDF, DOCX hoặc ZIP (tối đa 50MB)</Text>
           <View style={s.chooseButton}>
-            <Feather name="paperclip" size={z(18)} color={COLORS.navy} />
+            <Paperclip size={z(18)} color={COLORS.navy} strokeWidth={2} />
             <Text style={s.chooseText}>Chọn từ máy</Text>
           </View>
         </Pressable>
@@ -289,14 +297,14 @@ export default function AddDocumentScreen() {
         {file && (
           <View style={s.fileCard}>
             <View style={s.fileIcon}>
-              <Feather name="file-text" size={z(21)} color={COLORS.red} />
+              <FileText size={z(21)} color={COLORS.red} strokeWidth={2} />
               <Text style={s.fileIconLabel}>{file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOC'}</Text>
             </View>
             <View style={s.fileInfo}>
               <View style={s.fileTopRow}>
                 <Text numberOfLines={1} style={s.fileName}>{file.name}</Text>
                 <View style={s.completionBadge}>
-                  <Feather name="check-circle" size={z(12)} color={COLORS.green} />
+                  <CheckCircle size={z(12)} color={COLORS.green} strokeWidth={2.5} />
                   <Text style={s.completionText}>Đã sẵn sàng</Text>
                 </View>
               </View>
@@ -309,7 +317,7 @@ export default function AddDocumentScreen() {
               onPress={removeFile}
               style={s.removeButton}
             >
-              <Feather name="x" size={z(21)} color="#94A3B8" />
+              <X size={z(21)} color="#94A3B8" strokeWidth={2} />
             </Pressable>
           </View>
         )}
@@ -375,7 +383,7 @@ export default function AddDocumentScreen() {
             {isUploading ? (
               <ActivityIndicator size="small" color={COLORS.white} />
             ) : (
-              <Feather name="upload-cloud" size={z(19)} color={COLORS.white} />
+              <UploadCloud size={z(19)} color={COLORS.white} strokeWidth={2} />
             )}
             <Text style={s.submitText}>
               {isUploading ? 'Đang tải lên Cloudinary...' : 'Đăng tài liệu'}
