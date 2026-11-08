@@ -1,3 +1,4 @@
+import { AppError } from '../../middlewares/error.middleware';
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../../middlewares/auth.middleware';
 import { documentService } from './document.service';
@@ -156,6 +157,45 @@ export class DocumentController {
       next(error);
     }
   };
+
+
+
+  /**
+   * Lấy dung lượng lưu trữ Cloudinary thực tế (Hạn mức 1 GB)
+   */
+  public getStorageUsage = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.id || 'usr_01';
+      const storage = await documentService.getUserStorageUsage(userId);
+      return sendSuccess(res, storage, 'Thông tin dung lượng lưu trữ Cloudinary (1 GB/sinh viên)');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * Tải tệp tài liệu lên Cloudinary
+   */
+  public uploadDocumentFile = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const author = req.user || { id: 'usr_01', fullName: 'Nguyễn Quang Hoàng' };
+      const { fileData, fileName } = req.body;
+      if (!fileData) {
+        throw new AppError('Vui lòng cung cấp dữ liệu tệp (base64)', 400);
+      }
+      const result = await documentService.uploadDocumentFile(author, fileData, fileName);
+      return sendSuccess(
+        res,
+        result,
+        result.isCloudinary
+          ? 'Đã tải tài liệu lên Cloudinary thành công'
+          : 'Đã lưu tài liệu thành công'
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
 }
 
 export const documentController = new DocumentController();

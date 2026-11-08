@@ -15,6 +15,8 @@ router.get('/rooms/:id', pomodoroController.getRoomById);
 router.post('/rooms/:id/join', optionalAuth, pomodoroController.joinRoom);
 router.post('/rooms/:id/leave', optionalAuth, pomodoroController.leaveRoom);
 router.patch('/rooms/:id/timer', optionalAuth, validate(updateTimerSchema), pomodoroController.updateTimer);
+router.delete('/rooms/:id', optionalAuth, pomodoroController.closeRoom);
+router.post('/rooms/:id/close', optionalAuth, pomodoroController.closeRoom);
 
 // Realtime room messages and reactions
 router.get('/rooms/:id/messages', pomodoroController.getMessages);

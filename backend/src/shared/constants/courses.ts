@@ -51,3 +51,24 @@ export const VKU_SAMPLE_COURSES: Course[] = [
 ];
 
 
+
+export interface Cohort {
+  id: string;
+  name: string;
+  startYear: number;
+  endYear: number;
+  description: string;
+}
+
+export const VKU_COHORTS: Cohort[] = [
+  { id: 'K19', name: 'Khóa 2019 (K19)', startYear: 2019, endYear: 2023, description: 'Niên khóa 2019 - 2023' },
+  { id: 'K20', name: 'Khóa 2020 (K20)', startYear: 2020, endYear: 2024, description: 'Niên khóa 2020 - 2024' },
+  { id: 'K21', name: 'Khóa 2021 (K21)', startYear: 2021, endYear: 2025, description: 'Niên khóa 2021 - 2025' },
+  { id: 'K22', name: 'Khóa 2022 (K22)', startYear: 2022, endYear: 2026, description: 'Niên khóa 2022 - 2026' },
+  { id: 'K23', name: 'Khóa 2023 (K23)', startYear: 2023, endYear: 2027, description: 'Niên khóa 2023 - 2027' },
+  { id: 'K24', name: 'Khóa 2024 (K24)', startYear: 2024, endYear: 2028, description: 'Niên khóa 2024 - 2028' },
+  { id: 'K25', name: 'Khóa 2025 (K25)', startYear: 2025, endYear: 2029, description: 'Niên khóa 2025 - 2029' },
+  { id: 'K26', name: 'Khóa 2026 (K26)', startYear: 2026, endYear: 2030, description: 'Niên khóa 2026 - 2030' },
+  { id: 'K27', name: 'Khóa 2027 (K27)', startYear: 2027, endYear: 2031, description: 'Niên khóa 2027 - 2031' },
+  { id: 'K28', name: 'Khóa 2028 (K28)', startYear: 2028, endYear: 2032, description: 'Niên khóa 2028 - 2032' },
+];
