@@ -93,37 +93,11 @@ export default function LoginScreen() {
   }, []);
 
   const proceedFallbackLogin = async (rawAcc: string) => {
-    try {
-      showLoading('Đang kết nối tài khoản Google VKU...');
-      let targetEmail = rawAcc;
-      if (!targetEmail) {
-        targetEmail = 'hoangnq.23itb@vku.udn.vn';
-      } else if (!targetEmail.includes('@')) {
-        targetEmail = `${targetEmail}@vku.udn.vn`;
-      }
-
-      if (!targetEmail.endsWith('@vku.udn.vn')) {
-        hideLoading();
-        showError('Từ chối truy cập', 'Chỉ chấp nhận tài khoản Google sinh viên VKU có đuôi @vku.udn.vn!');
-        return;
-      }
-
-      const res = await authService.loginWithGoogle({
-        email: targetEmail,
-        fullName: 'Nguyễn Quang Hoàng',
-      });
-      hideLoading();
-      showSuccess(
-        'Đăng nhập Google VKU thành công',
-        `Xin chào ${res.user?.fullName || 'sinh viên VKU'} (${res.user?.email || targetEmail})!`
-      );
-      setTimeout(() => {
-        router.replace('/home' as any);
-      }, 500);
-    } catch (err: any) {
-      hideLoading();
-      showError('Đăng nhập Google thất bại', err.message || 'Chỉ chấp nhận tài khoản Google sinh viên VKU (@vku.udn.vn).');
-    }
+    hideLoading();
+    showError(
+      'Cần cấu hình Google OAuth',
+      'Tên miền Vercel này chưa được thêm vào Authorized JavaScript Origins trong Google Cloud Console. Vui lòng đăng nhập bằng Mã SV/Mật khẩu hoặc Đăng ký tài khoản.'
+    );
   };
 
   const handleGoogleLogin = async () => {
