@@ -421,7 +421,7 @@ export default function DocumentViewerModal({
   let fileUrl = rawUrl;
   if (fileUrl.includes('cdn.vku.udn.vn')) {
     const filename = fileUrl.split('/').pop();
-    fileUrl = 'http://localhost:5000/uploads/documents/' + filename;
+    fileUrl = 'https://vku-studyhub.onrender.com/uploads/documents/' + filename;
   }
   const isDirectPdf = meta.type === 'PDF' && Boolean(fileUrl);
   const knowledge = getSubjectKnowledge(document.title, document.subject, document.description);

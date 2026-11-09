@@ -23,7 +23,7 @@ class DocumentService {
     if (!url) return '';
     if (url.includes('cdn.vku.udn.vn')) {
       const filename = url.split('/').pop() || 'document.pdf';
-      return `http://localhost:5000/uploads/documents/${filename}`;
+      return `${ENV.BACKEND_URL}/uploads/documents/${filename}`;
     }
     return url;
   }

@@ -100,7 +100,7 @@ class CloudinaryService {
         };
       }
 
-      const localUrl = `http://localhost:5000/uploads/avatars/${filename}`;
+      const localUrl = `${ENV.BACKEND_URL}/uploads/avatars/${filename}`;
       return {
         url: localUrl,
         isCloudinary: false,
@@ -173,7 +173,7 @@ class CloudinaryService {
         };
       }
 
-      const localUrl = `http://localhost:5000/uploads/documents/${saveName}`;
+      const localUrl = `${ENV.BACKEND_URL}/uploads/documents/${saveName}`;
       return {
         url: localUrl,
         bytes,

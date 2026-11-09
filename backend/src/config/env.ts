@@ -5,6 +5,7 @@ dotenv.config();
 export const ENV = {
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 5000,
   NODE_ENV: process.env.NODE_ENV || 'development',
+  BACKEND_URL: process.env.BACKEND_URL || 'https://vku-studyhub.onrender.com',
   JWT_SECRET: process.env.JWT_SECRET || 'vku_studyhub_super_secret_jwt_key_2026',
   DB: {
     HOST: process.env.DB_HOST || 'localhost',
