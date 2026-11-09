@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
  */
 export const helmetMiddleware = helmet({
   contentSecurityPolicy: false, // Để Expo Web / fonts / Socket.IO hoạt động trơn tru
-  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Cho phép web tải ảnh avatar từ localhost:5000/uploads
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Cho phép web tải ảnh avatar từ uploads
   crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // Hỗ trợ Google OAuth Popup
 });
 

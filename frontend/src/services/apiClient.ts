@@ -1,27 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
+export const BACKEND_URL = 'https://vku-studyhub.onrender.com';
+
 const getBaseUrl = (): string => {
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5000/api';
-  }
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    // If accessed from other devices or localhost
-    const hostname = window.location.hostname || 'localhost';
-    return `http://${hostname}:5000/api`;
-  }
-  return 'http://localhost:5000/api';
+  return `${BACKEND_URL}/api`;
 };
 
 const getSocketUrl = (): string => {
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5000';
-  }
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    const hostname = window.location.hostname || 'localhost';
-    return `http://${hostname}:5000`;
-  }
-  return 'http://localhost:5000';
+  return BACKEND_URL;
 };
 
 export const API_BASE_URL = getBaseUrl();
