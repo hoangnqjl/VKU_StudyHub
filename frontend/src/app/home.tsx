@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService, radarService } from '../services';
 import {
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,

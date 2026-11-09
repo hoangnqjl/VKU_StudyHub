@@ -21,6 +21,7 @@ import LucideIcon, {
 } from './DynamicLucideIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlert } from './AlertContext';
+import { BACKEND_URL } from '../services/apiClient';
 
 export interface DocumentViewerItem {
   id?: string;
@@ -421,7 +422,7 @@ export default function DocumentViewerModal({
   let fileUrl = rawUrl;
   if (fileUrl.includes('cdn.vku.udn.vn')) {
     const filename = fileUrl.split('/').pop();
-    fileUrl = 'https://vku-studyhub.onrender.com/uploads/documents/' + filename;
+    fileUrl = `${BACKEND_URL}/uploads/documents/${filename}`;
   }
   const isDirectPdf = meta.type === 'PDF' && Boolean(fileUrl);
   const knowledge = getSubjectKnowledge(document.title, document.subject, document.description);
