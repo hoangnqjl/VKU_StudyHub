@@ -21,6 +21,7 @@ import LucideIcon, {
 } from './DynamicLucideIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlert } from './AlertContext';
+import { BACKEND_URL } from '../services/apiClient';
 
 export interface DocumentViewerItem {
   id?: string;

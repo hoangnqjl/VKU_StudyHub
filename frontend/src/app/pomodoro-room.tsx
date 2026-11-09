@@ -23,7 +23,8 @@ import {
 import { useDesign } from '../components/design-scale';
 import BookmarkButton from '../components/bookmark-button';
 import { useEffect } from 'react';
-import { pomodoroService, PomodoroRoom } from '../services';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { pomodoroService, PomodoroRoom, authService } from '../services';
 import { useAlert } from '../components/AlertContext';
 import { useLoading } from '../components/LoadingContext';
 import DropdownMenu, { DropdownMenuItem } from '../components/DropdownMenu';

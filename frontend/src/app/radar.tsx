@@ -17,6 +17,7 @@ import {
 } from 'lucide-react-native';
 import {
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
