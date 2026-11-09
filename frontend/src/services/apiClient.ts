@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-export const BACKEND_URL = 'https://vku-studyhub.onrender.com';
+export const BACKEND_URL =
+  process.env.EXPO_PUBLIC_API_URL || 'https://vku-studyhub-gsgd.onrender.com';
 
 const getBaseUrl = (): string => {
   return `${BACKEND_URL}/api`;
