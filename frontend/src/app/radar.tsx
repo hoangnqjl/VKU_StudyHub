@@ -237,11 +237,22 @@ export default function RadarScreen() {
   };
 
   useEffect(() => {
-    radarService.getBuddies().then(data => {
-      if (data && data.length > 0) {
-        setActiveBuddies(data);
-      }
-    }).catch(() => {});
+    let mounted = true;
+    const loadBuddies = () => {
+      radarService.getBuddies().then(data => {
+        if (mounted && data) {
+          setActiveBuddies(data);
+        }
+      }).catch(() => {});
+    };
+
+    loadBuddies();
+    const interval = setInterval(loadBuddies, 4000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleSeeAll = () => {
@@ -260,10 +271,10 @@ export default function RadarScreen() {
       id: b.userId || b.id || `b_${idx}`,
       name: b.studentName || 'Sinh viên VKU',
       faculty: b.studentId ? `Khoa CNTT • ${b.studentId}` : 'Khoa CNTT',
-      subject: b.courseName || 'Lập trình Web',
-      location: b.locationName || 'Thư viện • Tầng 2',
+      subject: b.courseName || subject || 'Lập trình di động',
+      location: b.locationName || selectedLocation.label || 'Khu tự học Tầng 3 - Nhà V',
       status: 'Đang online',
-      distanceMeters: (idx + 1) * 25,
+      distanceMeters: (idx + 1) * 20,
       goal: b.studyNote || 'Ôn tập học kỳ',
       initials: (b.studentName || 'VKU').split(' ').slice(-1)[0].substring(0, 2).toUpperCase()
     }));
@@ -282,12 +293,15 @@ export default function RadarScreen() {
       const matchesSubject =
         filter !== 'Cùng môn: Web' ||
         student.subject.toLocaleLowerCase('vi').includes('web') ||
-        student.subject.toLocaleLowerCase('vi').includes('quản lý');
+        student.subject.toLocaleLowerCase('vi').includes('di động') ||
+        student.subject.toLocaleLowerCase('vi').includes('cntt') ||
+        student.subject.toLocaleLowerCase('vi').includes('it');
       const matchesDistance =
-        filter !== 'Gần tôi (<100m)' || student.distanceMeters < 100;
+        filter !== 'Gần tôi (<100m)' || (student.distanceMeters !== undefined && student.distanceMeters <= 100);
       const matchesLocation =
         filter !== 'Khu tự học' ||
-        student.location.toLocaleLowerCase('vi').includes('khu tự học') ||
+        student.location.toLocaleLowerCase('vi').includes('tự học') ||
+        student.location.toLocaleLowerCase('vi').includes('nhà v') ||
         student.location.toLocaleLowerCase('vi').includes('thư viện');
       return matchesQuery && matchesSubject && matchesDistance && matchesLocation;
     });
