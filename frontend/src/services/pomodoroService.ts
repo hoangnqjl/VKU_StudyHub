@@ -90,8 +90,8 @@ export const pomodoroService = {
     return room;
   },
 
-  async joinRoom(roomId: string) {
-    const res = await apiClient.post(`/pomodoro/rooms/${roomId}/join`);
+  async joinRoom(roomId: string, user?: { id: string; fullName: string; avatarUrl?: string }) {
+    const res = await apiClient.post(`/pomodoro/rooms/${roomId}/join`, user);
     return res.data;
   },
 
