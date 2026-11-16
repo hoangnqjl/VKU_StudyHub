@@ -62,8 +62,6 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 // Mount Central API Routes
-// Giới hạn tần suất gọi API phòng chống DDoS & Brute Force
-app.use('/api', generalApiLimiter);
 app.use('/api', apiRouter);
 
 // 404 Route Handler
