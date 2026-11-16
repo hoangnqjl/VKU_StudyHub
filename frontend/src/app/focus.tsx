@@ -287,8 +287,8 @@ export default function FocusScreen() {
             isBreak,
             isPaused,
           };
-        }) : ROOMS).map((room) => {
-          const isBusy = room.isBreak || room.remainingMinutes <= 10;
+        }) : ROOMS).map((room: any) => {
+          const isBusy = Boolean(room.isBreak || (room.remainingMinutes !== undefined && room.remainingMinutes <= 10));
           return (
             <View key={room.id} style={s.roomCard}>
               <View style={s.roomMainRow}>

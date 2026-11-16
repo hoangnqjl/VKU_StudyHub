@@ -117,8 +117,66 @@ const VKU_LOCATIONS: DropdownMenuItem[] = [
 ];
 const SUBJECTS = ['Lập trình Web', 'Cấu trúc DL & GT', 'Trí tuệ nhân tạo'];
 
-const STUDENTS: any[] = [];
-const DEFAULT_VKU_STUDENTS: any[] = [];
+const DEFAULT_VKU_STUDENTS = [
+  {
+    id: 'thao-my',
+    name: 'Lê Thảo My',
+    faculty: 'Khoa CNTT • Khóa K22',
+    subject: 'Lập trình Web (React / Tailwind)',
+    location: 'Bàn B12 • Tầng 3 Nhà V',
+    status: 'Cách 15m',
+    distanceMeters: 15,
+    goal: 'Ôn thi cuối kỳ',
+    requestFaculty: 'Khoa CNTT & Truyền thông · K22',
+    requestLocation: 'Bàn B12 · Tầng 3, Nhà V (Thư viện VKU)',
+    requestSubject: 'Lập trình Web — React Router & State Management',
+    initials: 'TM',
+  },
+  {
+    id: 'minh-anh',
+    name: 'Nguyễn Minh Anh',
+    faculty: 'Khoa CNTT • Khóa K22',
+    subject: 'Lập trình Web & Di động',
+    location: 'Khu tự học • Tầng 3',
+    status: 'Cách 40m',
+    distanceMeters: 40,
+    goal: 'Làm bài tập nhóm',
+    initials: 'MA',
+  },
+  {
+    id: 'hoang-nam',
+    name: 'Trần Hoàng Nam',
+    faculty: 'Khoa CNTT • Khóa K21',
+    subject: 'Lập trình Web nâng cao',
+    location: 'Thư viện • Tầng 2',
+    status: 'Cách 80m',
+    distanceMeters: 80,
+    goal: 'Ôn thi cuối kỳ',
+    initials: 'HN',
+  },
+  {
+    id: 'phuc-thinh',
+    name: 'Đặng Phúc Thịnh',
+    faculty: 'Khoa Kỹ thuật Máy tính • K23',
+    subject: 'Cấu trúc DL & GT',
+    location: 'Khu tự học Tầng 3 - Nhà V',
+    status: 'Cách 20m',
+    distanceMeters: 20,
+    goal: 'Luyện LeetCode',
+    initials: 'PT',
+  },
+  {
+    id: 'khanh-huyen',
+    name: 'Võ Thị Khánh Huyền',
+    faculty: 'Khoa Kinh tế số & TMĐT • K22',
+    subject: 'Tiếng Anh chuyên ngành',
+    location: 'Thư viện VKU - Tầng 2',
+    status: 'Cách 65m',
+    distanceMeters: 65,
+    goal: 'Luyện đề TOEIC 750+',
+    initials: 'KH',
+  },
+];
 export default function RadarScreen() {
   const { s, z } = useDesign(raw);
   const unreadCount = useNotificationBadge();
@@ -210,8 +268,8 @@ export default function RadarScreen() {
       initials: (b.studentName || 'VKU').split(' ').slice(-1)[0].substring(0, 2).toUpperCase()
     }));
 
-    // Merge API buddies with DEFAULT_VKU_STUDENTS to always guarantee full 14 online students
-    const sourceList = dynamicFromApi;
+    // Merge API buddies with DEFAULT_VKU_STUDENTS to always guarantee online students
+    const sourceList = dynamicFromApi.length > 0 ? dynamicFromApi : DEFAULT_VKU_STUDENTS;
 
     const normalizedQuery = query.trim().toLocaleLowerCase('vi');
     return sourceList.filter((student: any) => {
