@@ -73,8 +73,14 @@ export const radarService = {
   },
 
   async getJoinRequests() {
-    const res = await apiClient.get<JoinRequest[]>('/radar/join-requests');
-    return res.data;
+    const res = await apiClient.get<any>('/radar/join-requests');
+    if (res.data && Array.isArray(res.data.inbox)) {
+      return res.data.inbox as JoinRequest[];
+    }
+    if (Array.isArray(res.data)) {
+      return res.data as JoinRequest[];
+    }
+    return [] as JoinRequest[];
   },
 
   async getBadgeCount(): Promise<{ pendingCount: number }> {
