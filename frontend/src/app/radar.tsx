@@ -144,9 +144,13 @@ export default function RadarScreen() {
   const [activeBuddies, setActiveBuddies] = useState<any[]>([]);
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
     authService.getCurrentUser().then(u => {
-      if (u?.avatarUrl) setUserAvatar(u.avatarUrl);
+      if (u) {
+        if (u.id) setCurrentUserId(u.id);
+        if (u.avatarUrl) setUserAvatar(u.avatarUrl);
+      }
     }).catch(() => {});
     AsyncStorage.getItem('@vku_user_avatar').then(a => {
       if (a && !a.includes('avatar_usr_01_default.png')) {
@@ -208,20 +212,23 @@ export default function RadarScreen() {
   };
 
   const students = useMemo(() => {
-    const sourceList = activeBuddies.map((b: any, idx: number) => ({
-      id: b.userId || b.id || `b_${idx}`,
-      name: b.studentName || 'Sinh viên VKU',
-      faculty: b.studentId ? `Khoa CNTT • ${b.studentId}` : 'Khoa CNTT',
-      subject: b.courseName || 'Lập trình di động đa nền tảng',
-      location: b.locationName || 'Khu tự học Tòa V',
-      status: 'Đang online',
-      distanceMeters: (idx + 1) * 20,
-      goal: b.studyNote || 'Bàn tự học số B12',
-      initials: (b.studentName || 'VKU').split(' ').slice(-1)[0].substring(0, 2).toUpperCase()
-    }));
+    const sourceList = activeBuddies
+      .filter((b: any) => !currentUserId || b.userId !== currentUserId)
+      .map((b: any, idx: number) => ({
+        id: b.userId || b.id || `b_${idx}`,
+        userId: b.userId,
+        name: b.studentName || 'Sinh viên VKU',
+        faculty: b.studentId ? `Khoa CNTT • ${b.studentId}` : 'Khoa CNTT',
+        subject: b.courseName || 'Lập trình di động đa nền tảng',
+        location: b.locationName || 'Khu tự học Tòa V',
+        status: 'Đang online',
+        distanceMeters: (idx + 1) * 20,
+        goal: b.studyNote || 'Bàn tự học số B12',
+        initials: (b.studentName || 'VKU').split(' ').slice(-1)[0].substring(0, 2).toUpperCase()
+      }));
 
     return sourceList;
-  }, [activeBuddies]);
+  }, [activeBuddies, currentUserId]);
 
   if (!fontsLoaded) return null;
 
@@ -460,6 +467,8 @@ export default function RadarScreen() {
                   router.push({
                     pathname: '/join-table',
                     params: {
+                      buddyId: student.userId || student.id,
+                      userId: student.userId || student.id,
                       name: student.name,
                       faculty: student.faculty,
                       subject: student.subject,
