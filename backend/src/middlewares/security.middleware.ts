@@ -32,11 +32,11 @@ export const authRateLimiter = rateLimit({
 });
 
 /**
- * Rate Limiter chung cho toàn bộ hệ thống API
+ * Rate Limiter chung cho toàn bộ hệ thống API (nâng lên mức cao để không bị chặn do polling realtime)
  */
 export const generalApiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 600, // Tối đa 600 requests/15 phút
+  max: 10000, // Tối đa 10,000 requests/15 phút
   standardHeaders: true,
   legacyHeaders: false,
 });

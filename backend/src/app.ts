@@ -11,6 +11,9 @@ import { sendSuccess, sendError } from './shared/utils/response.util';
 
 const app = express();
 
+// Tin tưởng proxy của Render / Cloudflare để rate-limit nhận đúng IP của từng client
+app.set('trust proxy', 1);
+
 // Global Middlewares
 app.use(
   cors({

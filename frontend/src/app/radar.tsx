@@ -192,7 +192,7 @@ export default function RadarScreen() {
     };
 
     loadBuddies();
-    const interval = setInterval(loadBuddies, 4000);
+    const interval = setInterval(loadBuddies, 8000);
 
     return () => {
       mounted = false;
