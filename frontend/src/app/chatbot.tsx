@@ -27,6 +27,50 @@ const QUICK_PROMPTS = [
   'Cách dùng Radar tìm bạn học cùng',
 ];
 
+function renderFormattedText(text: string, isUser: boolean) {
+  if (isUser) {
+    return <Text style={[styles.msgText, styles.msgTextUser]}>{text}</Text>;
+  }
+
+  const lines = text.split('\n');
+  return (
+    <View style={{ gap: 4 }}>
+      {lines.map((rawLine, lineIdx) => {
+        let line = rawLine.trimEnd();
+        const isHeading = /^#{1,6}\s+/.test(line);
+        if (isHeading) {
+          line = line.replace(/^#{1,6}\s+/, '');
+        } else if (/^[\*\-]\s+/.test(line)) {
+          line = '• ' + line.replace(/^[\*\-]\s+/, '');
+        }
+
+        const parts = line.split(/(\*\*[^*]+\*\*)/g);
+        return (
+          <Text
+            key={lineIdx}
+            style={[
+              styles.msgText,
+              styles.msgTextBot,
+              isHeading && { fontWeight: '700', fontSize: 15, marginTop: lineIdx > 0 ? 4 : 0 },
+            ]}
+          >
+            {parts.map((part, partIdx) => {
+              if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+                return (
+                  <Text key={partIdx} style={{ fontWeight: '700' }}>
+                    {part.slice(2, -2)}
+                  </Text>
+                );
+              }
+              return <Text key={partIdx}>{part}</Text>;
+            })}
+          </Text>
+        );
+      })}
+    </View>
+  );
+}
+
 export default function ChatbotScreen() {
   const router = useRouter();
   const scrollRef = useRef<any>(null);
@@ -93,7 +137,7 @@ export default function ChatbotScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/home' as any))}
           style={styles.backBtn}
           accessibilityLabel="Quay lại"
         >
@@ -134,9 +178,7 @@ export default function ChatbotScreen() {
                   </View>
                 )}
                 <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
-                  <Text style={[styles.msgText, isUser ? styles.msgTextUser : styles.msgTextBot]}>
-                    {msg.text}
-                  </Text>
+                  {renderFormattedText(msg.text, isUser)}
                 </View>
                 {isUser && (
                   <View style={styles.avatarUser}>
