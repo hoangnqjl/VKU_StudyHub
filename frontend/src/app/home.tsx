@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Bell, Search, SlidersHorizontal, Crosshair, QrCode, Timer, ChevronRight } from 'lucide-react-native';
+import { Bell, Search, SlidersHorizontal, Crosshair, QrCode, Timer, ChevronRight, Bot } from 'lucide-react-native';
 import { useNotificationBadge } from '../utils/useNotificationBadge';
 import { useDesign } from '../components/design-scale';
 import StudyHubTabBar from '../components/study-hub-tab-bar';
@@ -297,6 +297,31 @@ Hãy bật tín hiệu để kết nối cùng bạn bè!
           })
         )}
       </ScrollView>
+
+      {/* ===== Nút mở Trợ lý AI Chatbot ===== */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Mở trợ lý AI Chatbot"
+        onPress={() => router.push('/chatbot' as any)}
+        style={{
+          position: 'absolute',
+          right: z(18),
+          bottom: Math.max(insets.bottom - 20, 13) + z(76),
+          width: z(52),
+          height: z(52),
+          borderRadius: z(26),
+          backgroundColor: '#208AEF',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#0F172A',
+          shadowOpacity: 0.18,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 4 },
+          elevation: 6,
+        }}
+      >
+        <Bot size={z(24)} color="#FFFFFF" strokeWidth={2} />
+      </Pressable>
 
       {/* ===== Thanh điều hướng dưới ===== */}
       <StudyHubTabBar active="home" bottom={Math.max(insets.bottom - 20, 13)} />

@@ -7,6 +7,7 @@ import { optionalAuth } from '../middlewares/auth.middleware';
 import radarRoutes from '../modules/radar/radar.routes';
 import documentRoutes from '../modules/documents/document.routes';
 import pomodoroRoutes from '../modules/pomodoro/pomodoro.routes';
+import chatbotRoutes from '../modules/chatbot/chatbot.routes';
 
 const apiRouter = Router();
 
@@ -23,5 +24,6 @@ apiRouter.put('/edit-profile', optionalAuth, validate(updateProfileSchema), auth
 apiRouter.use('/radar', radarRoutes);
 apiRouter.use('/documents', documentRoutes);
 apiRouter.use('/pomodoro', pomodoroRoutes);
+apiRouter.use('/chatbot', chatbotRoutes);
 
 export default apiRouter;
