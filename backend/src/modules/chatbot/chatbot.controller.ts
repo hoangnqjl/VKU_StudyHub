@@ -5,8 +5,11 @@ import { SendChatInput } from './chatbot.schema';
 export const chatbotController = {
   async sendMessage(req: Request, res: Response): Promise<void> {
     try {
-      const input = req.body as SendChatInput;
-      const result = await chatbotService.generateReply(input);
+      const { message, history = [] } = req.body as Partial<SendChatInput>;
+      const result = await chatbotService.generateReply({
+        message: (message || '').trim(),
+        history,
+      });
       res.status(200).json({
         success: true,
         data: result,
